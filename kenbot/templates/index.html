@@ -4,7 +4,25 @@
   <div class="row">
     <h1>Generate a custom HMDA report</h1>
 
-    <form action="#">
+    <form action="" class="">
+      <div class="row" style="margin-bottom: 20px;">
+        <div class="three columns">
+          <label class="right">Your metropolitan area</label>
+        </div>
+        <div class="six columns end">
+          <select name="msa" class="inline chosen-select" data-placeholder="Choose your area...">
+            <option></option>
+            {% for msa in msas %}
+              <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="ten columns offset-by-two">
+          <input type="submit" class="button" value="Generate your report" />
+        </div>
+      </div>
     </form>
   </div>
 {% endblock body %}
