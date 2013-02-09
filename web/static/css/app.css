@@ -1,5 +1,11 @@
 /* Artfully masterminded by ZURB  */
 
+.team-kenbot {
+  background: url('../img/kenbot.gif') no-repeat;
+  text-indent: 50px;
+  height: 80px;
+}
+
 /* -------------------------------------------------- 
    Table of Contents
 -----------------------------------------------------

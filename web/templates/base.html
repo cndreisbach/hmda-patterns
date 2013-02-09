@@ -22,6 +22,12 @@
 <body>
     {% block body %}{% endblock %}
 
+    <footer class="row">
+      <div class="team-kenbot">
+        TEAM KENBOT
+      </div>
+    </footer>
+    
     {% assets "app_js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
     {% endassets %}
