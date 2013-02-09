@@ -49,6 +49,7 @@ app_js = assets.Bundle('js/jquery.js',
                        'js/jquery.foundation.alerts.js',
                        'js/jquery.foundation.topbar.js',
                        'js/app.js',
+                       'js/kenbot.js',
                        output='gen/app.js')
 asset_pkg.register('app_js', app_js)
 
