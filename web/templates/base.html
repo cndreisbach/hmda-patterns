@@ -14,8 +14,12 @@
     <link rel="stylesheet" href="{{ ASSET_URL }}" />
   {% endassets %}
 
+<<<<<<< HEAD
 
   <script src="javascripts/modernizr.foundation.js"></script>
+=======
+  <script src="{{ url_for('static', filename='js/modernizr.foundation.js') }}"></script>
+>>>>>>> 7df7179aa1253b99706cb5f696d2ada5fa1230db
 
   {% block head %}{% endblock %}
 </head>
