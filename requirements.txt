@@ -1,5 +1,4 @@
-sqlalchemy
 flask
 flask-assets
-flask-sqlalchemy
+sqlsoup
 psycopg2

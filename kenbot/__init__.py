@@ -3,13 +3,13 @@
 import os
 
 from flask import Flask, render_template, jsonify
-from flask.ext.sqlalchemy import SQLAlchemy
+import sqlsoup
 
 app = Flask(__name__)
 app.config['ASSETS_DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:////tmp/kenbot.db')
+app.config['DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:////tmp/kenbot.db')
 
-db = SQLAlchemy(app)
+db = sqlsoup.SQLSoup(app.config['DATABASE_URI'])
 
 import kenbot.assets
 from kenbot import data
@@ -55,7 +55,7 @@ def denial_rates_data(msa_md=None):
 
 @app.route('/states')
 def states():
-    s = data.conn().execute("select * from state").fetchall()
+    s = db.execute("select * from state").fetchall()
     return jsonify(states = to_dicts(s))
 
 def to_dicts(query_result):
