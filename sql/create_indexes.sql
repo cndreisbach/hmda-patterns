@@ -23,3 +23,5 @@ create index on hmda(applicant_income);
 create index on hmda(loan_amount);
 
 create index on hmda(msa_md, state_code, county_code, census_tract_number);
+
+create index on hmda(action_type);

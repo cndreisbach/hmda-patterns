@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block js_scripts %}
+<script src="{{ url_for('static', filename='raphael-min.js') }}"></script>
+<script src="{{ url_for('static', filename='g.raphael-min.js') }}"></script>
+<script src="{{ url_for('static', filename='g.pie-min.js') }}"></script>
+<script src="{{ url_for('static', filename='g.bar-min.js') }}"></script>
+<script src="{{ url_for('static', filename='g.line-min.js') }}"></script>
+<script src="{{ url_for('static', filename='g.dot-min.js') }}"></script>
+{% endblock %}
