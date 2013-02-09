@@ -6,7 +6,7 @@
             Kenbot = {
                 r : Raphael("chart_holder"),
                 fin : function () {
-                        this.flag = r.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+                        this.flag = Kenbot.r.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
                 },
                 fout : function () {
                     this.flag.animate({opacity: 0}, 300, function () {this.remove();});
@@ -26,14 +26,14 @@
             $.get('/denial_rates_data',
 
                 function(data, textStatus, xhr){
-                    console.log(data);
-                    $.each(data, function(index, value){
-                        console.log(value);
-                    })
+                    $.each(data.data, function(index, value){
+                        chart_data.push(value['denial_rate']);
+                    });
+
+                    Kenbot.r.barchart(10, 10, 300, 220, chart_data).hover(Kenbot.fin, Kenbot.fout);
                 }
             );
 
-            Kenbot.r.barchart(10, 10, 300, 220, chart_data).hover(Kenbot.fin, Kenbot.fout);
         }
     </script>
 {% endblock %}

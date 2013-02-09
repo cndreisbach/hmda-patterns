@@ -22,6 +22,7 @@ def denial_rates_data():
     return jsonify(data=(
         {'total':30563, 'approval_count':13448, 'denial_rate':18.42, 'race':'American Indian'}
         ,{'total':255645, 'approval_count':135681, 'denial_rate':11.61, 'race':'Asian'}
+        ,{'total':12345, 'approval_count':135681, 'denial_rate':22.61, 'race':'White'}
     ))
 
 asset_pkg = assets.Environment(app)
