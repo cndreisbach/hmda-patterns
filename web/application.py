@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.getcwd())
 
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 import kenbot
 
@@ -17,9 +17,12 @@ def index():
 def denial_rates():
     return render_template('chart_sample.html')
 
-@app.route('/stuff')
-def stuff():
-    pass
+@app.route('/denial_rates_data')
+def denial_rates_data():
+    return jsonify(data=(
+        {'total':30563, 'approval_count':13448, 'denial_rate':18.42, 'race':'American Indian'}
+        ,{'total':255645, 'approval_count':135681, 'denial_rate':11.61, 'race':'Asian'}
+    ))
 
 if __name__ == '__main__':
     app.run()

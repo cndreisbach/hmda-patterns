@@ -1,10 +1,50 @@
 {% extends "chart_base.html" %}
 
+{% block js_inline %}
+    <script type="text/javascript">
+        window.onload = function(){
+            Kenbot = {
+                r : Raphael("chart_holder"),
+                fin : function () {
+                        this.flag = r.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+                },
+                fout : function () {
+                    this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+                }
+            };
+
+
+        }
+
+        function make_chart(){
+            var axisy = [];
+            var chart_data = []
+            for(var x=0; x<= 30; x=x+5){
+                axisy.push(x);
+            }
+
+            $.get('/denial_rates_data',
+
+                function(data, textStatus, xhr){
+                    console.log(data);
+                    $.each(data, function(index, value){
+                        console.log(value);
+                    })
+                }
+            );
+
+            Kenbot.r.barchart(10, 10, 300, 220, chart_data).hover(Kenbot.fin, Kenbot.fout);
+        }
+    </script>
+{% endblock %}
+
 {% block body %}
 
 <h1>A Chart</h1>
 
-<div id="chart"></div>
+<div id="chart_holder"></div>
+
+<button onclick="make_chart();">Rebuild</button>
 
 
 {% endblock %}
