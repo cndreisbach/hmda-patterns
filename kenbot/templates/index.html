@@ -1,4 +1,48 @@
-{% extends "base.html" %}
+{% extends "chart_base.html" %}
+
+{% block head %}
+<script type="text/javascript">
+    window.onload = function(){
+        Kenbot = {
+            r : Raphael("chart_holder"),
+            fin : function () {
+                this.flag = Kenbot.r.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+            },
+            fout : function () {
+                this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+            }
+        };
+
+
+    }
+
+    function make_chart(){
+        var axisy = [];
+        var purchase_data = []
+        var refinance_data = []
+        for(var x=0; x<= 30; x=x+5){
+            axisy.push(x);
+        }
+
+        var msa_md = $('#msa').find(":selected").val();
+        $.get('/denial_rates_data/' + msa_md,
+
+              function(data, textStatus, xhr){
+                  $.each(data.result, function(index, value){
+                      if(value['loan_purpose'] == 'Refinancing'){
+                          refinance_data.push(value['denial_rate']);
+                      } else {
+                          purchase_data.push(value['denial_rate']);
+                      }
+                  });
+                  Kenbot.r.clear();
+                  Kenbot.r.barchart(10, 10, 300, 220, [purchase_data, refinance_data]).hover(Kenbot.fin, Kenbot.fout);
+              }
+        );
+
+    }
+</script>
+{% endblock %}
 
 {% block body %}
   <div class="row">
@@ -10,7 +54,7 @@
           <label class="right">Your metropolitan area</label>
         </div>
         <div class="six columns end">
-          <select name="msa" class="inline chosen-select" data-placeholder="Choose your area...">
+          <select name="msa" id="msa" class="inline chosen-select" data-placeholder="Choose your area...">
             <option></option>
             {% for msa in msas %}
               <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
@@ -20,7 +64,8 @@
       </div>
       <div class="row">
         <div class="ten columns offset-by-two">
-          <input type="submit" class="button" value="Generate your report" />
+          <div id="chart_holder"></div>
+          <input type="submit" class="button" value="Generate your report" onclick="make_chart(); return false;" />
         </div>
       </div>
     </form>
