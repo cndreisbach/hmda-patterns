@@ -1,6 +1,6 @@
 {% extends "chart_base.html" %}
 
-{% block js_inline %}
+{% block head %}
     <script type="text/javascript">
         window.onload = function(){
             Kenbot = {
@@ -39,12 +39,12 @@
 {% endblock %}
 
 {% block body %}
-
-<h1>A Chart</h1>
+<div class="row">
+  <h1>A Chart</h1>
+</div>
 
 <div id="chart_holder"></div>
 
 <button onclick="make_chart();">Rebuild</button>
-
 
 {% endblock %}
