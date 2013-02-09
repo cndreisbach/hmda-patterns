@@ -1,4 +1,10 @@
+import sys
+import os
+sys.path.append(os.getcwd())
+
 from flask import Flask, render_template
+
+import kenbot
 
 app = Flask(__name__)
 app.debug = True
