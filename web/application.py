@@ -17,5 +17,9 @@ def index():
 def denial_rates():
     return render_template('chart_sample.html')
 
+@app.route('/stuff')
+def stuff():
+    pass
+
 if __name__ == '__main__':
     app.run()
