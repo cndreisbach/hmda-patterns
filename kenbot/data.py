@@ -19,3 +19,7 @@ def conn():
     if connection is None:
         connection = db.engine.connect()
     return connection
+
+def msas():
+    res = conn().execute("SELECT cbsa_code, name FROM cbsa WHERE parent_code IS NULL")
+    return res.fetchall()

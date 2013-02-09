@@ -1,5 +1,13 @@
 /* Artfully masterminded by ZURB  */
 
+#footer {
+  border-top: 5px solid #EEE;
+  background-color: #EEE;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
 .team-kenbot {
   background: url('../img/kenbot.gif') no-repeat;
   text-indent: 50px;
