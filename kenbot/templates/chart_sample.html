@@ -18,19 +18,24 @@
 
         function make_chart(){
             var axisy = [];
-            var chart_data = []
+            var purchase_data = []
+            var refinance_data = []
             for(var x=0; x<= 30; x=x+5){
                 axisy.push(x);
             }
 
-            $.get('/denial_rates_data',
+            $.get('/denial_rates_data/20500',
 
                 function(data, textStatus, xhr){
-                    $.each(data.data, function(index, value){
-                        chart_data.push(value['denial_rate']);
+                    $.each(data.result, function(index, value){
+                        if(value['loan_purpose'] == 'Refinancing'){
+                            refinance_data.push(value['denial_rate']);
+                        } else {
+                            purchase_data.push(value['denial_rate']);
+                        }
                     });
 
-                    Kenbot.r.barchart(10, 10, 300, 220, chart_data).hover(Kenbot.fin, Kenbot.fout);
+                    Kenbot.r.barchart(10, 10, 300, 220, [purchase_data, refinance_data]).hover(Kenbot.fin, Kenbot.fout);
                 }
             );
 
