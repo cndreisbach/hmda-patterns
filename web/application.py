@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 import os
 sys.path.append(os.getcwd())
@@ -13,7 +15,7 @@ app.config['ASSETS_DEBUG'] = app.debug
 
 @app.route('/')
 def index():
-    return 'Hello World 2!'
+    return render_template('index.html')
 
 @app.route('/denial_rates')
 def denial_rates():
