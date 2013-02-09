@@ -1,3 +1,5 @@
 sqlalchemy
 flask
 flask-assets
+flask-sqlalchemy
+psycopg2

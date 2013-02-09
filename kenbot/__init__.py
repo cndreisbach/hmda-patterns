@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 
+import os
+
 from flask import Flask, render_template, jsonify
 from flask.ext import assets
-
-import kenbot
+from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.debug = True
-app.config['ASSETS_DEBUG'] = app.debug
+app.config['ASSETS_DEBUG'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:////tmp/kenbot.db')
+
+db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
