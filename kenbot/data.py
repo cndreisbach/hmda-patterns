@@ -15,6 +15,7 @@ State = db.Table('state', meta, autoload=True, autoload_with=db.engine)
 County = db.Table('county', meta, autoload=True, autoload_with=db.engine)
 
 def conn():
+    global connection
     if connection is None:
         connection = db.engine.connect()
     return connection
