@@ -1,11 +1,7 @@
 {% extends "base.html" %}
 
 {% block js_scripts %}
-<script src="{{ url_for('static', filename='js/raphael-min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/g.raphael-min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/g.pie-min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/g.bar-min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/g.line-min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/g.dot-min.js') }}"></script>
+    {% assets "raphael" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
 {% endblock %}
-
