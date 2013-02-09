@@ -12,6 +12,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:/
 
 db = SQLAlchemy(app)
 
+from kenbot import data
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -27,6 +29,14 @@ def denial_rates_data():
         ,{'total':255645, 'approval_count':135681, 'denial_rate':11.61, 'race':'Asian'}
         ,{'total':12345, 'approval_count':135681, 'denial_rate':22.61, 'race':'White'}
     ))
+
+@app.route('/states')
+def states():
+    s = data.conn().execute("select * from state").fetchall()
+    return jsonify(states = to_dicts(s))
+
+def to_dicts(query_result):
+    return [dict(items) for items in query_result]
 
 asset_pkg = assets.Environment(app)
 
