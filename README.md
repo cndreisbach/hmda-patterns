@@ -4,10 +4,10 @@ kenbot
 To run the app
 --------------
 ```sh
-python ./manage.py runserver --db-uri <db_uri>
+python ./manage.py runserver [--config config]
 ```
 
-`db_uri` should be a URI for a Postgres database, like so: `postgresql://localhost/hmda`.
+`config` should be the path to a Flask configuration file.
 
 Tools
 -----

@@ -9,15 +9,12 @@ import sqlsoup
 from .views import views
 from .assets import raphael, app_js, app_css
 
-def create_app(config=None, db_uri=None):
+def create_app(config=None):
     app = Flask(__name__)
     app.debug = True
-    app.config['ASSETS_DEBUG'] = True
     
     if config:
         app.config.from_pyfile(config)
-    if db_uri:
-        app.config['DATABASE_URI'] = db_uri
 
     app.register_blueprint(views)
 
