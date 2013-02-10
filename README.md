@@ -1,6 +1,14 @@
 kenbot
 ======
 
+To run the app
+--------------
+```sh
+python ./manage.py runserver --db-uri <db_uri>
+```
+
+`db_uri` should be a URI for a Postgres database, like so: `postgresql://localhost/hmda`.
+
 Tools
 -----
 * Python
