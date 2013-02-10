@@ -21,17 +21,21 @@
 </head>
 
 <body>
-    {% block body %}{% endblock %}
+  <div id="main" class="row">
+    <div class="twelve columns">
+      {% block body %}{% endblock %}
+    </div>
+  </div>
 
-    <footer class="row" id="footer">
-      <div class="team-kenbot">
-        TEAM KENBOT
-      </div>
-    </footer>
+  <footer class="row" id="footer">
+    <div class="team-kenbot">
+      TEAM KENBOT
+    </div>
+  </footer>
     
-    {% assets "app_js" %}
-    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-    {% endassets %}
-    {% block js_scripts %}{% endblock %}
+  {% assets "app_js" %}
+  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+  {% block js_scripts %}{% endblock %}
 </body>
 </html>

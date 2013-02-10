@@ -1,10 +1,14 @@
-/* Artfully masterminded by ZURB  */
+body {
+  background: url('../img/debut_light.png');
+}
+
+#main {
+  margin-top: 20px;
+}
 
 #footer {
-  border-top: 5px solid #EEE;
-  background-color: #EEE;
   margin-top: 20px;
-  margin-bottom: 20px;
+  border: 1px solid #DDD;
   padding: 20px;
 }
 
@@ -13,31 +17,3 @@
   text-indent: 50px;
   height: 80px;
 }
-
-/* -------------------------------------------------- 
-   Table of Contents
------------------------------------------------------
-:: Shared Styles
-:: Page Name 1
-:: Page Name 2
-*/
-
-
-/* -----------------------------------------
-   Shared Styles
------------------------------------------ */
-
-
-
-/* -----------------------------------------
-   Page Name 1
------------------------------------------ */
-
-
-
-
-/* -----------------------------------------
-   Page Name 2
------------------------------------------ */
-
-
