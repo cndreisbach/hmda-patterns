@@ -28,6 +28,7 @@ app_js = assets.Bundle('js/jquery.js',
                        'js/xcharts.js',
                        'js/app.js',
                        'js/kenbot.js',
+                       'js/sketch.js',
                        filters='yui_js',
                        output='gen/app.js')
 

@@ -29,3 +29,22 @@ body {
   stroke: none;
   max-width: 50px;
 }
+
+.tools a{
+    border: 1px solid black;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+    vertical-align: middle;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    color: black;
+    font-weight: bold;
+}
+
+#colors_sketch{
+    border: thin solid gray;
+    /*width: 800px;*/
+    /*height: 300px;*/
+}

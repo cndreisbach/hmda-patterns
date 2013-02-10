@@ -9,6 +9,10 @@ def index():
     return render_template('index.html',
                            msas=data.msas())
 
+@views.route('/request_report')
+def request_report():
+    return render_template('request_report.html')
+
 @views.route('/denial_rates')
 def denial_rates():
     return render_template('chart_sample.html')
