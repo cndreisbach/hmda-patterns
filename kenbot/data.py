@@ -1,8 +1,10 @@
 from flask import g
 
 def msas():
-    res = g.db.execute("SELECT cbsa_code, name FROM cbsa WHERE parent_code IS NULL")
-    return res.fetchall()
+    return g.db.cbsa.filter(g.db.cbsa.parent_code==None).all()
+
+def msa(cbsa_code):
+    return g.db.cbsa.filter_by(cbsa_code=cbsa_code).one()
 
 def denial_rates(msa_md=None):
     sql = """with denials_by_race as (

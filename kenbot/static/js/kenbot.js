@@ -1,51 +1,55 @@
 (function ($) {
+  var updateDenialRates = function (msa_md) {    
+    $.get('/denial_rates_data/' + msa_md, function (data, textStatus, xhr) {
+      data = data.result.map(function (datum) {
+        return {
+          "x": datum.race,
+          "y": datum.denial_rate,
+          "loan_purpose": datum.loan_purpose
+        };
+      }).groupBy(function (datum) {
+        return datum.loan_purpose;
+      });
+
+      var chartData = {
+        "xScale": "ordinal",
+        "yScale": "linear",
+        "type": "bar",
+        "main": [
+          {
+            "className": ".msa",
+            "data": data['Home purchase']
+          },
+          {
+            "className": ".msa2",
+            "data": data['Refinancing']
+          }
+        ]
+      };
+
+      var options = {
+        "tickFormatX": function (d) {
+          return d.truncate(25, false);
+        }
+      };
+      
+      var firstChart = new xChart('bar',
+                                  chartData,
+                                  '#first-chart',
+                                  options);
+    });
+  };
+
+  window.updateDenialRates = updateDenialRates;
+  
   $(document).ready(function () {
     $('.chosen-select').chosen();
 
     $('#metro-form').on('submit', function (event) {
       event.preventDefault();
-
       var msa_md = $('#msa').find(":selected").val();
-      $.get('/denial_rates_data/' + msa_md, function (data, textStatus, xhr) {
-        data = data.result.map(function (datum) {
-          return {
-            "x": datum.race,
-            "y": datum.denial_rate,
-            "loan_purpose": datum.loan_purpose
-          };
-        }).groupBy(function (datum) {
-          return datum.loan_purpose;
-        });
-
-        console.log(data);
-
-        var chartData = {
-          "xScale": "ordinal",
-          "yScale": "linear",
-          "type": "bar",
-          "main": [
-            {
-              "className": ".msa",
-              "data": data['Home purchase']
-            },
-            {
-              "className": ".msa2",
-              "data": data['Refinancing']
-            }
-          ]
-        };
-
-        var options = {
-          "tickFormatX": function (d) {
-            return d.truncate(25, false);
-          }
-        };
-          
-        var firstChart = new xChart('bar',
-                                    chartData,
-                                    '#first-chart',
-                                    options);
-      });
+      var url = "/msa-report/" + msa_md;
+      window.location = url;
     });    
   });
 })(jQuery);

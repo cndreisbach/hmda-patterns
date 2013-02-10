@@ -9,6 +9,11 @@ def index():
     return render_template('index.html',
                            msas=data.msas())
 
+@views.route('/msa-report/<int:msa_md>')
+def msa_report(msa_md):
+    return render_template('msa_report.html',
+                           msa=data.msa(msa_md))
+
 @views.route('/denial_rates')
 def denial_rates():
     return render_template('chart_sample.html')
