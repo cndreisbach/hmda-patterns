@@ -51,14 +51,6 @@ def gov_backed_by_income_purpose(msa_md=None):
     return results_to_json(data.gov_backed_by_income_purpose(msa_md))
 
 
-
-@views.route('/states')
-def states():
-    s = db.execute("select * from state").fetchall()
-    return jsonify(states = to_dicts(s))
-
 def results_to_json(query_result):
-    return jsonify(result = to_dicts(query_result))
+    return jsonify(result = [dict(items) for items in query_result])
 
-def to_dicts(query_result):
-    return [dict(items) for items in query_result]
