@@ -1,5 +1,7 @@
 flask
 flask-assets
+flask-script
 sqlsoup
 psycopg2
 yuicompressor
+git+https://github.com/crnixon/hmda_tools.git#egg=hmda_tools

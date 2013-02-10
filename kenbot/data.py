@@ -1,7 +1,7 @@
-from . import db
+from flask import g
 
 def msas():
-    res = db.execute("SELECT cbsa_code, name FROM cbsa WHERE parent_code IS NULL")
+    res = g.db.execute("SELECT cbsa_code, name FROM cbsa WHERE parent_code IS NULL")
     return res.fetchall()
 
 def denial_rates(msa_md=None):
@@ -25,7 +25,7 @@ def denial_rates(msa_md=None):
         join loan_purpose lp on d.loan_purpose = lp.id
         order by loan_purpose, race"""
 
-    return db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
 
 def denial_by_income(msa_md=None):
     sql = """
@@ -42,7 +42,7 @@ def denial_by_income(msa_md=None):
         order by r.race, income_group
     """
 
-    return db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
 
 def hal_gov_backed_by_income(msa_md=None):
     sql = """
@@ -59,7 +59,7 @@ def hal_gov_backed_by_income(msa_md=None):
         group by  income_group
         order by  income_group
     """
-    return db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
 
 def hal_gov_backed_by_race(msa_md=None):
     sql = """
@@ -77,7 +77,7 @@ def hal_gov_backed_by_race(msa_md=None):
         group by  r.race
         order by  r.race
     """
-    return db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
 
 def gov_backed_by_race_purpose(msa_md=None):
     sql = """
@@ -94,7 +94,7 @@ def gov_backed_by_race_purpose(msa_md=None):
         group by r.race, loan_purpose
         order by r.race, loan_purpose
     """
-    return db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
 
 def gov_backed_by_income_purpose(msa_md=None):
     sql = """
@@ -110,4 +110,4 @@ def gov_backed_by_income_purpose(msa_md=None):
         group by income_group,  loan_purpose
         order by income_group,  loan_purpose
     """
-    return db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
