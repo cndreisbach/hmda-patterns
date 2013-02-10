@@ -1,54 +1,10 @@
 {% extends "chart_base.html" %}
 
-{% block head %}
-<script type="text/javascript">
-    window.onload = function(){
-        Kenbot = {
-            r : Raphael("chart_holder"),
-            fin : function () {
-                this.flag = Kenbot.r.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
-            },
-            fout : function () {
-                this.flag.animate({opacity: 0}, 300, function () {this.remove();});
-            }
-        };
-
-
-    }
-
-    function make_chart(){
-        var axisy = [];
-        var purchase_data = []
-        var refinance_data = []
-        for(var x=0; x<= 30; x=x+5){
-            axisy.push(x);
-        }
-
-        var msa_md = $('#msa').find(":selected").val();
-        $.get('/denial_rates_data/' + msa_md,
-
-              function(data, textStatus, xhr){
-                  $.each(data.result, function(index, value){
-                      if(value['loan_purpose'] == 'Refinancing'){
-                          refinance_data.push(value['denial_rate']);
-                      } else {
-                          purchase_data.push(value['denial_rate']);
-                      }
-                  });
-                  Kenbot.r.clear();
-                  Kenbot.r.barchart(10, 10, 300, 220, [purchase_data, refinance_data]).hover(Kenbot.fin, Kenbot.fout);
-              }
-        );
-
-    }
-</script>
-{% endblock %}
-
 {% block body %}
   <div class="row">
     <h1>Generate a custom HMDA report</h1>
 
-    <form action="" class="">
+    <form action="" class="" id="metro-form">
       <div class="row" style="margin-bottom: 20px;">
         <div class="three columns">
           <label class="right">Your metropolitan area</label>
@@ -64,10 +20,14 @@
       </div>
       <div class="row">
         <div class="ten columns offset-by-two">
-          <input type="submit" class="button" value="Generate your report" onclick="make_chart(); return false;" />
+          <input type="submit" class="button" value="Generate your report" />
             <div id="chart_holder"></div>
         </div>
       </div>
     </form>
+
+    <div class="chart">
+      <figure style="width: 100%; height: 300px;" id="first-chart"></figure>
+    </div>
   </div>
 {% endblock body %}

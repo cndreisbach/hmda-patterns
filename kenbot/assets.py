@@ -27,13 +27,19 @@ app_js = assets.Bundle('js/jquery.js',
                        'js/jquery.foundation.alerts.js',
                        'js/jquery.foundation.topbar.js',
                        'chosen/chosen.jquery.js',
+                       'js/sugar.js',
+                       'js/d3.v3.js',
+                       'js/xcharts.js',
                        'js/app.js',
                        'js/kenbot.js',
+                       filters='yui_js',
                        output='gen/app.js')
 asset_pkg.register('app_js', app_js)
 
 app_css = assets.Bundle('css/foundation.css',
                         'chosen/chosen.css',
+                        'css/xcharts.css',
                         'css/app.css',
+                        filters='yui_css',
                         output='gen/app.css')
 asset_pkg.register('app_css', app_css)

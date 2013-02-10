@@ -2,3 +2,4 @@ flask
 flask-assets
 sqlsoup
 psycopg2
+yuicompressor

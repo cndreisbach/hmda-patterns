@@ -16,4 +16,16 @@ body {
   background: url('../img/kenbot.gif') no-repeat;
   text-indent: 50px;
   height: 80px;
+  font-family: 'VT323';
+  font-size: 500%;
+}
+
+.chart {
+  padding: 20px;
+  background: white;
+}
+
+.xchart .axis text {
+  stroke: none;
+  max-width: 50px;
 }

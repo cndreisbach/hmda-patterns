@@ -50,6 +50,7 @@ def denial_rates_data(msa_md=None):
     join race r on d.applicant_race_1 = r.id
     join loan_purpose lp on d.loan_purpose = lp.id
   order by loan_purpose, race""" % (msa_md)
+#"
     result = db.execute(sql).fetchall()
     return jsonify(result = to_dicts(result))
 
