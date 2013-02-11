@@ -1,27 +1,28 @@
 {% extends "chart_base.html" %}
 
 {% block body %}
-  <h1>Generate a custom HMDA report</h1>
+  <div class="ten columns centered">
+    <h1>Generate a custom HMDA report</h1>
 
-  <form action="" class="" id="metro-form">
-    <div class="row" style="margin-bottom: 20px;">
-      <div class="three columns">
-        <label class="right">Your metropolitan area</label>
+    <form action="" class="" id="metro-form">
+      <div class="row" style="margin-bottom: 20px;">
+        <div class="three columns">
+          <label class="right">Your metropolitan area</label>
+        </div>
+        <div class="six columns end">
+          <select name="msa" id="msa" class="inline chosen-select" data-placeholder="Choose your area...">
+            <option></option>
+            {% for msa in msas %}
+              <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
       </div>
-      <div class="six columns end">
-        <select name="msa" id="msa" class="inline chosen-select" data-placeholder="Choose your area...">
-          <option></option>
-          {% for msa in msas %}
-            <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
-          {% endfor %}
-        </select>
+      <div class="row">
+        <div class="nine columns offset-by-three">
+          <input type="submit" class="button" value="Generate your report" />
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="nine columns offset-by-three">
-        <input type="submit" class="button" value="Generate your report" />
-        <div id="chart_holder"></div>
-      </div>
-    </div>
-  </form>
+    </form>
+  </div>
 {% endblock body %}

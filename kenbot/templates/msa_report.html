@@ -1,5 +1,9 @@
 {% extends "chart_base.html" %}
 
+{% block title %}
+  {{ super() }} - {{ msa.name }}
+{% endblock %}
+
 {% block body %}
   <h1>HMDA Report for {{ msa.name }}</h1>
 
