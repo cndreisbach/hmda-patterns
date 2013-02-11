@@ -1,0 +1,877 @@
+{% extends "chart_base.html" %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="row">
+  <h1>A Chart</h1>
+</div>
+
+<div class="line">
+	<h3>Denial by income</h3>
+	<div id="denial_by_income_legend" class='right'></div>
+    <div id="denial_by_income_chart"  class="line-chart left" style="width: 800px; height: 500px;" ></div>
+</div>
+<div class="line">
+	<h3>Hal government backed by income</h3>
+	<div id="hal_income_legend" class='right'></div>
+    <div id="hal_income_chart"   style="width: 800px; height: 500px;" ></div>
+</div>
+<div class="line">
+	<h3>Hal government backed by race</h3>
+	<div id="hal_race_legend" class='right'></div>
+    <div id="hal_race_chart"   style="width: 800px; height: 500px;" ></div>
+</div>
+
+<div class="line">
+	<h3>Government backed by race purpose</h3>
+	<div id="purpose_race_legend" class='right'></div>
+    <div id="purpose_race_chart"   style="width: 800px; height: 500px;" ></div>
+</div>
+<div class="line">
+	<h3>Government backed by income purpose</h3>
+	<div id="purpose_legend" class='right'></div>
+    <div id="purpose_chart"   style="width: 800px; height: 500px;" ></div>
+</div>
+
+
+<button onclick="make_chart();">Rebuild</button>
+
+{% endblock %}
+
+{% block js_scripts %}
+<script>
+  $(document).ready(function () {
+	var data = {
+	    "result": [
+	        {
+	            "total_denied": 2678,
+	            "income_group": 30,
+	            "total": 10155,
+	            "denial_rate": 26.3712456917774,
+	            "race": "American Indian or Alaska Native"
+	        },
+	        {
+	            "total_denied": 3714,
+	            "income_group": 60,
+	            "total": 25149,
+	            "denial_rate": 14.7679828223786,
+	            "race": "American Indian or Alaska Native"
+	        },
+	        {
+	            "total_denied": 2233,
+	            "income_group": 90,
+	            "total": 16138,
+	            "denial_rate": 13.836906679886,
+	            "race": "American Indian or Alaska Native"
+	        },
+	        {
+	            "total_denied": 1248,
+	            "income_group": 120,
+	            "total": 8580,
+	            "denial_rate": 14.5454545454545,
+	            "race": "American Indian or Alaska Native"
+	        },
+	        {
+	            "total_denied": 660,
+	            "income_group": 150,
+	            "total": 4425,
+	            "denial_rate": 14.9152542372881,
+	            "race": "American Indian or Alaska Native"
+	        },
+	        {
+	            "total_denied": 1506,
+	            "income_group": 200,
+	            "total": 11422,
+	            "denial_rate": 13.1850814218175,
+	            "race": "American Indian or Alaska Native"
+	        },
+	        {
+	            "total_denied": 2777,
+	            "income_group": 30,
+	            "total": 30787,
+	            "denial_rate": 9.02004092636502,
+	            "race": "Asian"
+	        },
+	        {
+	            "total_denied": 4031,
+	            "income_group": 60,
+	            "total": 120021,
+	            "denial_rate": 3.35857891535648,
+	            "race": "Asian"
+	        },
+	        {
+	            "total_denied": 3073,
+	            "income_group": 90,
+	            "total": 135856,
+	            "denial_rate": 2.26195383347073,
+	            "race": "Asian"
+	        },
+	        {
+	            "total_denied": 2429,
+	            "income_group": 120,
+	            "total": 128315,
+	            "denial_rate": 1.89299770097027,
+	            "race": "Asian"
+	        },
+	        {
+	            "total_denied": 1740,
+	            "income_group": 150,
+	            "total": 87344,
+	            "denial_rate": 1.99212309946877,
+	            "race": "Asian"
+	        },
+	        {
+	            "total_denied": 2879,
+	            "income_group": 200,
+	            "total": 204952,
+	            "denial_rate": 1.40471915375307,
+	            "race": "Asian"
+	        },
+	        {
+	            "total_denied": 7960,
+	            "income_group": 30,
+	            "total": 108496,
+	            "denial_rate": 7.33667600648872,
+	            "race": "Black or African American"
+	        },
+	        {
+	            "total_denied": 9458,
+	            "income_group": 60,
+	            "total": 258666,
+	            "denial_rate": 3.6564527228163,
+	            "race": "Black or African American"
+	        },
+	        {
+	            "total_denied": 6390,
+	            "income_group": 90,
+	            "total": 149422,
+	            "denial_rate": 4.27647869791597,
+	            "race": "Black or African American"
+	        },
+	        {
+	            "total_denied": 4029,
+	            "income_group": 120,
+	            "total": 75859,
+	            "denial_rate": 5.31116940639871,
+	            "race": "Black or African American"
+	        },
+	        {
+	            "total_denied": 2412,
+	            "income_group": 150,
+	            "total": 34456,
+	            "denial_rate": 7.00023218017181,
+	            "race": "Black or African American"
+	        },
+	        {
+	            "total_denied": 4358,
+	            "income_group": 200,
+	            "total": 115632,
+	            "denial_rate": 3.76885291268853,
+	            "race": "Black or African American"
+	        },
+	        {
+	            "total_denied": 13506,
+	            "income_group": 30,
+	            "total": 112584,
+	            "denial_rate": 11.996376039224,
+	            "race": "Information not provided by applicant in mail, Internet, or telephone application"
+	        },
+	        {
+	            "total_denied": 17533,
+	            "income_group": 60,
+	            "total": 358327,
+	            "denial_rate": 4.89301671378378,
+	            "race": "Information not provided by applicant in mail, Internet, or telephone application"
+	        },
+	        {
+	            "total_denied": 12872,
+	            "income_group": 90,
+	            "total": 311931,
+	            "denial_rate": 4.12655362884741,
+	            "race": "Information not provided by applicant in mail, Internet, or telephone application"
+	        },
+	        {
+	            "total_denied": 8901,
+	            "income_group": 120,
+	            "total": 226998,
+	            "denial_rate": 3.92117992229006,
+	            "race": "Information not provided by applicant in mail, Internet, or telephone application"
+	        },
+	        {
+	            "total_denied": 5659,
+	            "income_group": 150,
+	            "total": 137876,
+	            "denial_rate": 4.1044126606516,
+	            "race": "Information not provided by applicant in mail, Internet, or telephone application"
+	        },
+	        {
+	            "total_denied": 10322,
+	            "income_group": 200,
+	            "total": 415727,
+	            "denial_rate": 2.48287938959942,
+	            "race": "Information not provided by applicant in mail, Internet, or telephone application"
+	        },
+	        {
+	            "total_denied": 1160,
+	            "income_group": 30,
+	            "total": 4314,
+	            "denial_rate": 26.8891979601298,
+	            "race": "Native Hawaiian or Other Pacific Islander"
+	        },
+	        {
+	            "total_denied": 1801,
+	            "income_group": 60,
+	            "total": 13247,
+	            "denial_rate": 13.5955310636371,
+	            "race": "Native Hawaiian or Other Pacific Islander"
+	        },
+	        {
+	            "total_denied": 1134,
+	            "income_group": 90,
+	            "total": 11155,
+	            "denial_rate": 10.1658449125952,
+	            "race": "Native Hawaiian or Other Pacific Islander"
+	        },
+	        {
+	            "total_denied": 700,
+	            "income_group": 120,
+	            "total": 7235,
+	            "denial_rate": 9.67519004837595,
+	            "race": "Native Hawaiian or Other Pacific Islander"
+	        },
+	        {
+	            "total_denied": 409,
+	            "income_group": 150,
+	            "total": 3863,
+	            "denial_rate": 10.587626197256,
+	            "race": "Native Hawaiian or Other Pacific Islander"
+	        },
+	        {
+	            "total_denied": 877,
+	            "income_group": 200,
+	            "total": 9785,
+	            "denial_rate": 8.96269800715381,
+	            "race": "Native Hawaiian or Other Pacific Islander"
+	        },
+	        {
+	            "total_denied": 54,
+	            "income_group": 30,
+	            "total": 15989,
+	            "denial_rate": 0.337732190881231,
+	            "race": "Not applicable"
+	        },
+	        {
+	            "total_denied": 118,
+	            "income_group": 60,
+	            "total": 90402,
+	            "denial_rate": 0.130528085661822,
+	            "race": "Not applicable"
+	        },
+	        {
+	            "total_denied": 77,
+	            "income_group": 90,
+	            "total": 98192,
+	            "denial_rate": 0.0784177937102819,
+	            "race": "Not applicable"
+	        },
+	        {
+	            "total_denied": 35,
+	            "income_group": 120,
+	            "total": 81065,
+	            "denial_rate": 0.0431752297539012,
+	            "race": "Not applicable"
+	        },
+	        {
+	            "total_denied": 24,
+	            "income_group": 150,
+	            "total": 55369,
+	            "denial_rate": 0.0433455543715798,
+	            "race": "Not applicable"
+	        },
+	        {
+	            "total_denied": 1851,
+	            "income_group": 200,
+	            "total": 1114674,
+	            "denial_rate": 0.166057519956507,
+	            "race": "Not applicable"
+	        },
+	        {
+	            "total_denied": 26088,
+	            "income_group": 30,
+	            "total": 839699,
+	            "denial_rate": 3.10682756559196,
+	            "race": "White"
+	        },
+	        {
+	            "total_denied": 31774,
+	            "income_group": 60,
+	            "total": 2767746,
+	            "denial_rate": 1.14800996912289,
+	            "race": "White"
+	        },
+	        {
+	            "total_denied": 25627,
+	            "income_group": 90,
+	            "total": 2213495,
+	            "denial_rate": 1.15776182010802,
+	            "race": "White"
+	        },
+	        {
+	            "total_denied": 18797,
+	            "income_group": 120,
+	            "total": 1442592,
+	            "denial_rate": 1.30300181894812,
+	            "race": "White"
+	        },
+	        {
+	            "total_denied": 12654,
+	            "income_group": 150,
+	            "total": 835813,
+	            "denial_rate": 1.51397501594256,
+	            "race": "White"
+	        },
+	        {
+	            "total_denied": 19043,
+	            "income_group": 200,
+	            "total": 2179662,
+	            "denial_rate": 0.873667568641377,
+	            "race": "White"
+	        }
+	    ]
+	};
+	
+	
+	
+    //drawing denial rate chart
+	data = data.result.map(function (datum) {
+	  return {
+	    "x": datum.income_group,
+	    "y": datum.denial_rate,
+	    "race": datum.race, 
+	    "total":datum.total,
+	    "total_denied": datum.total_denied
+	  };
+	}).groupBy(function (datum) {
+	  return datum.race;
+	});
+
+	var chartData = {
+	  "xScale": "ordinal",
+	  "yScale": "linear",
+	  "type": "line-dotted",
+	  "main": [
+	    {
+	      "className": ".gr1",
+	      "data": data['White'],
+	      "legend": "White" 
+	    },
+	    {
+	      "className": ".gr2",	
+	      "data": data['Asian'],
+	      "legend": "Asian" 
+	    },
+	    {
+	      "className": ".gr3",
+	      "data": data['Native Hawaiian or Other Pacific Islander'],
+	      "legend": "Native Hawaiian or Other Pacific Islander" 
+	
+	    },
+	    {
+	      "className": ".gr4",	
+	      "data": data['Black or African American'],
+	      "legend": "Black or African American" 
+	
+	    },
+	    {
+	      "className": ".gr5",
+	      "legend": "American Indian or Alaska Native", 
+	      "data": data['American Indian or Alaska Native']
+	    },
+	    {
+	      "className": ".gr6",
+	      "legend": "Not applicable", 
+	      "data": data['Not applicable']
+	    },
+	    {
+	      "className": ".gr7",
+	      "legend": "Information not provided...", 
+	      "data": data['Information not provided by applicant in mail, Internet, or telephone application']
+	    }
+	  ]
+	};
+ 	var options = {
+	  "tickFormatY": function (y) {
+	    return y + '%';
+	
+	  },
+	  "tickFormatX": function (x) {
+	    return '$' + x + ",000";
+
+	  }
+	};
+	var denial_rate_chart = new xChart('line-dotted',
+	                            chartData,
+	                            '#denial_by_income_chart',
+	                            options);
+	
+	draw_legend(chartData['main'], $('#denial_by_income_legend'));
+	
+	//HAL INCOME
+	var data = {
+	"result": [
+	{
+	"is_gov_backed_percent": 33.142924113683,
+	"total_gov_backed": 141396,
+	"income_group": 30,
+	"is_hal_percent": 9.41341927922649,
+	"total_hal": 40160,
+	"total": 426625
+	},
+	{
+	"is_gov_backed_percent": 32.9974814053888,
+	"total_gov_backed": 559567,
+	"income_group": 60,
+	"is_hal_percent": 5.24653155142715,
+	"total_hal": 88970,
+	"total": 1695787
+	},
+	{
+	"is_gov_backed_percent": 22.8589287915928,
+	"total_gov_backed": 344853,
+	"income_group": 90,
+	"is_hal_percent": 3.2252783018055,
+	"total_hal": 48657,
+	"total": 1508614
+	},
+	{
+	"is_gov_backed_percent": 15.0787462965851,
+	"total_gov_backed": 158588,
+	"income_group": 120,
+	"is_hal_percent": 2.2880353550144,
+	"total_hal": 24064,
+	"total": 1051732
+	},
+	{
+	"is_gov_backed_percent": 10.4490188809729,
+	"total_gov_backed": 67085,
+	"income_group": 150,
+	"is_hal_percent": 1.87781727105925,
+	"total_hal": 12056,
+	"total": 642022
+	},
+	{
+	"is_gov_backed_percent": 16.9599013150091,
+	"total_gov_backed": 300272,
+	"income_group": 200,
+	"is_hal_percent": 2.77223942406644,
+	"total_hal": 49082,
+	"total": 1770482
+	}
+	]
+	};
+	
+    var hal = [];
+    var gov = [];
+	data = data.result.each(function (datum) {
+	  var obj = {x: datum.income_group, y:datum.is_hal_percent};
+	  hal.push(obj);
+	  var obj2 = {x: datum.income_group, y:datum.is_gov_backed_percent};
+	  gov.push(obj2);
+	})
+	var chart_data = {
+	  "xScale": "ordinal",
+	  "yScale": "linear",
+	  "main": [
+	    {"className":".main.l1","data":hal, legend:'hal'},
+		{"className":".main.l2","data":gov, legend:'gov'}
+	  ]
+	};
+	var options = {
+	  "tickFormatY": function (y) {
+	    return y + '%';
+	
+	  },
+	  "tickFormatX": function (x) {
+	    return '$' + x + ",000";
+
+	  }
+	};
+
+	var myChart = new xChart('bar', chart_data, '#hal_income_chart', options);
+	draw_legend(chart_data.main, $('#hal_income_legend'));
+	
+	
+	/*HAL RACE*/
+	
+	var data = {
+	"result": [
+	{
+	"total_gov_backed": 11628,
+	"is_gov_backed_percent": 35.4339346660166,
+	"is_hal_percent": 6.42369575816675,
+	"race": "American Indian or Alaska Native",
+	"total_hal": 2108,
+	"total": 32816
+	},
+	{
+	"total_gov_backed": 39276,
+	"is_gov_backed_percent": 10.1516177557677,
+	"is_hal_percent": 1.17758352416941,
+	"race": "Asian",
+	"total_hal": 4556,
+	"total": 386894
+	},
+	{
+	"total_gov_backed": 142729,
+	"is_gov_backed_percent": 49.4469099362206,
+	"is_hal_percent": 7.22117713086045,
+	"race": "Black or African American",
+	"total_hal": 20844,
+	"total": 288651
+	},
+	{
+	"total_gov_backed": 138639,
+	"is_gov_backed_percent": 20.7079035336924,
+	"is_hal_percent": 2.42599679162596,
+	"race": "Information not provided by applicant in mail, Internet, or telephone application",
+	"total_hal": 16242,
+	"total": 669498
+	},
+	{
+	"total_gov_backed": 7613,
+	"is_gov_backed_percent": 33.9653787811189,
+	"is_hal_percent": 2.71259034531989,
+	"race": "Native Hawaiian or Other Pacific Islander",
+	"total_hal": 608,
+	"total": 22414
+	},
+	{
+	"total_gov_backed": 1048,
+	"is_gov_backed_percent": 1.30171782036791,
+	"is_hal_percent": 1.67434696741979,
+	"race": "Not applicable",
+	"total_hal": 1348,
+	"total": 80509
+	},
+	{
+	"total_gov_backed": 1230828,
+	"is_gov_backed_percent": 21.9223864008777,
+	"is_hal_percent": 3.87004673629615,
+	"race": "White",
+	"total_hal": 217283,
+	"total": 5614480
+	}
+	]
+	};
+	var hal = [];
+    var gov = [];
+	data = data.result.each(function (datum) {
+	  var obj = {x: datum.race, y:datum.is_hal_percent};
+	  hal.push(obj);
+	  var obj2 = {x: datum.race, y:datum.is_gov_backed_percent};
+	  gov.push(obj2);
+	})
+	var chart_data = {
+	  "xScale": "ordinal",
+	  "yScale": "linear",
+	  "main": [
+	    {"className":".main.l1","data":hal, legend:'hal'},
+		{"className":".main.l2","data":gov, legend:'gov'}
+	  ]
+	};	
+        
+     
+	var options = {
+	  "tickFormatY": function (y) {
+	    return y + '%';
+	
+	  },
+	  	"tickFormatX": function (d) {
+        return d.truncate(15, false);
+      }
+	};
+
+	var myChart = new xChart('bar', chart_data, '#hal_race_chart', options);
+	draw_legend(chart_data.main, $('#hal_race_legend'));
+	
+	
+	
+    //race purpose
+     var data = 
+	{
+	"result": [
+	{
+	"total_gov_backed": 2909,
+	"is_gov_backed_percent": 21.6314693634741,
+	"total": 13448,
+	"loan_purpose_name": "purchase",
+	"race": "American Indian or Alaska Native"
+	},
+	{
+	"total_gov_backed": 2016,
+	"is_gov_backed_percent": 11.981457268513,
+	"total": 16826,
+	"loan_purpose_name": "refinance",
+	"race": "American Indian or Alaska Native"
+	},
+	{
+	"total_gov_backed": 3800,
+	"is_gov_backed_percent": 2.80068690531467,
+	"total": 135681,
+	"loan_purpose_name": "purchase",
+	"race": "Asian"
+	},
+	{
+	"total_gov_backed": 2491,
+	"is_gov_backed_percent": 1.02201580411432,
+	"total": 243734,
+	"loan_purpose_name": "refinance",
+	"race": "Asian"
+	},
+	{
+	"total_gov_backed": 7561,
+	"is_gov_backed_percent": 5.88615379824684,
+	"total": 128454,
+	"loan_purpose_name": "purchase",
+	"race": "Black or African American"
+	},
+	{
+	"total_gov_backed": 6805,
+	"is_gov_backed_percent": 4.87617873828427,
+	"total": 139556,
+	"loan_purpose_name": "refinance",
+	"race": "Black or African American"
+	},
+	{
+	"total_gov_backed": 12269,
+	"is_gov_backed_percent": 6.35742303885754,
+	"total": 192987,
+	"loan_purpose_name": "purchase",
+	"race": "Information not provided by applicant in mail, Internet, or telephone application"
+	},
+	{
+	"total_gov_backed": 12958,
+	"is_gov_backed_percent": 2.89322443365768,
+	"total": 447874,
+	"loan_purpose_name": "refinance",
+	"race": "Information not provided by applicant in mail, Internet, or telephone application"
+	},
+	{
+	"total_gov_backed": 1783,
+	"is_gov_backed_percent": 19.8906738063365,
+	"total": 8964,
+	"loan_purpose_name": "purchase",
+	"race": "Native Hawaiian or Other Pacific Islander"
+	},
+	{
+	"total_gov_backed": 1175,
+	"is_gov_backed_percent": 9.47046022406706,
+	"total": 12407,
+	"loan_purpose_name": "refinance",
+	"race": "Native Hawaiian or Other Pacific Islander"
+	},
+	{
+	"total_gov_backed": 85,
+	"is_gov_backed_percent": 0.255416328615644,
+	"total": 33279,
+	"loan_purpose_name": "purchase",
+	"race": "Not applicable"
+	},
+	{
+	"total_gov_backed": 303,
+	"is_gov_backed_percent": 0.721703506097561,
+	"total": 41984,
+	"loan_purpose_name": "refinance",
+	"race": "Not applicable"
+	},
+	{
+	"total_gov_backed": 28525,
+	"is_gov_backed_percent": 1.4917988976639,
+	"total": 1912121,
+	"loan_purpose_name": "purchase",
+	"race": "White"
+	},
+	{
+	"total_gov_backed": 27553,
+	"is_gov_backed_percent": 0.804278822885853,
+	"total": 3425802,
+	"loan_purpose_name": "refinance",
+	"race": "White"
+	}
+	]
+	};
+	var data = data.result.map(
+	  function(datum){return({
+	     x:datum.race, 
+	     y:datum.is_gov_backed_percent, 
+	     loan_purpose_name:datum.loan_purpose_name
+	  });
+	}).groupBy(function(d){
+	  return d.loan_purpose_name;
+	});
+	var chart_data = {
+	  "xScale": "ordinal",
+	  "yScale": "linear",
+	  "main": [
+	    {"className":".main.l1","data":data['refinance'], legend:'refinance'},
+		{"className":".main.l2","data":data['purchase'], legend:'purchase'}
+	  ]
+	};
+
+	var options = {
+	  "tickFormatY": function (y) {
+	    return y + '%';
+	
+	  },
+	  	"tickFormatX": function (d) {
+        return d.truncate(15, false);
+      }
+	};
+
+	var myChart = new xChart('bar', chart_data, '#purpose_race_chart', options);
+	draw_legend(chart_data.main, $('#purpose_race_legend'));
+
+	//income PURPOSE
+	var data = {
+	"result": [
+	{
+	"total_gov_backed": 119380,
+	"income_group": 30,
+	"total": 198041,
+	"loan_purpose_name": "purchase",
+	"is_gov_backed_percent": 60.280446978151
+	},
+	{
+	"total_gov_backed": 19683,
+	"income_group": 30,
+	"total": 187513,
+	"loan_purpose_name": "refinance",
+	"is_gov_backed_percent": 10.4968722168596
+	},
+	{
+	"total_gov_backed": 452820,
+	"income_group": 60,
+	"total": 769626,
+	"loan_purpose_name": "purchase",
+	"is_gov_backed_percent": 58.8363698731592
+	},
+	{
+	"total_gov_backed": 100591,
+	"income_group": 60,
+	"total": 825682,
+	"loan_purpose_name": "refinance",
+	"is_gov_backed_percent": 12.1827773888737
+	},
+	{
+	"total_gov_backed": 253867,
+	"income_group": 90,
+	"total": 538071,
+	"loan_purpose_name": "purchase",
+	"is_gov_backed_percent": 47.1809482391729
+	},
+	{
+	"total_gov_backed": 86872,
+	"income_group": 90,
+	"total": 892870,
+	"loan_purpose_name": "refinance",
+	"is_gov_backed_percent": 9.72952389485591
+	},
+	{
+	"total_gov_backed": 109715,
+	"income_group": 120,
+	"total": 323313,
+	"loan_purpose_name": "purchase",
+	"is_gov_backed_percent": 33.9346082588699
+	},
+	{
+	"total_gov_backed": 46857,
+	"income_group": 120,
+	"total": 681119,
+	"loan_purpose_name": "refinance",
+	"is_gov_backed_percent": 6.87941461036911
+	},
+	{
+	"total_gov_backed": 45101,
+	"income_group": 150,
+	"total": 185397,
+	"loan_purpose_name": "purchase",
+	"is_gov_backed_percent": 24.3267151032649
+	},
+	{
+	"total_gov_backed": 21113,
+	"income_group": 150,
+	"total": 431080,
+	"loan_purpose_name": "refinance",
+	"is_gov_backed_percent": 4.8976988030064
+	},
+	{
+	"total_gov_backed": 46484,
+	"income_group": 200,
+	"total": 410486,
+	"loan_purpose_name": "purchase",
+	"is_gov_backed_percent": 11.3241377294232
+	},
+	{
+	"total_gov_backed": 251273,
+	"income_group": 200,
+	"total": 1309919,
+	"loan_purpose_name": "refinance",
+	"is_gov_backed_percent": 19.1823311212373
+	}
+	]
+	};
+
+	
+
+	var data = data.result.map(
+	  function(datum){return({
+	     x:datum.income_group, 
+	     y:datum.is_gov_backed_percent, 
+	     loan_purpose_name:datum.loan_purpose_name
+	  });
+	}).groupBy(function(d){
+	  return d.loan_purpose_name;
+	});
+	var chart_data = {
+	  "xScale": "ordinal",
+	  "yScale": "linear",
+	  "main": [
+	    {"className":".main.l1","data":data['refinance'], legend:'refinance'},
+		{"className":".main.l2","data":data['purchase'], legend:'purchase'}
+	  ]
+	};
+	var options = {
+	  "tickFormatY": function (y) {
+	    return y + '%';
+	
+	  },
+	  "tickFormatX": function (x) {
+	    return '$' + x + ",000";
+
+	  }
+	};
+
+	var myChart = new xChart('bar', chart_data, '#purpose_chart', options);
+	draw_legend(chart_data.main, $('#purpose_legend'));
+	
+	function draw_legend(data, container){
+	  	var ln = data.length - 1;
+		for (i = 0; i<= ln; i++){
+		  var legend_block = $('<div>').addClass('media legend_block');
+		  var color_block = $('<div>').addClass('color_block ' + 'color' + i);
+		  var img_block = $('<div>').addClass('img').append(color_block);
+		  var bd_block = $('<div>').html(data[i]['legend']).addClass('bd')
+		  legend_block.append(img_block).append(bd_block);
+		  container.append(legend_block);
+		}	
+	}
+	
+	
+	
+  });
+</script>
+
+{% endblock %}

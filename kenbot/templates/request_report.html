@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <h1>Request a custom HMDA report</h1>
+
+  <form action="" class="" id="report-request-form">
+    <div class="row">
+      <div class="three columns">
+        <label class="right">Name</label>
+      </div>
+      <div class="four columns end">
+        <input type="text">
+      </div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="right">Email</label>
+      </div>
+      <div class="four columns end">
+        <input type="text">
+      </div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="right">What information are you seeking? Describe your report request here:</label>
+      </div>
+      <div class="six columns end">
+        <textarea cols="100" rows="20"></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="right">Use the sketch pad below to draw a sample of your report</label>
+      </div>
+      <div class="ten columns end" style="background-color: white;">
+
+        <div id="sketch_pad">
+          <div class="tools">
+            <a href="#colors_sketch" data-download="png" style="float: right; width: 100px;">Download</a>
+          </div>
+          <canvas id="colors_sketch" width="800" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <input type="submit" class="button" value="Submit Request" />
+        <div id="chart_holder"></div>
+      </div>
+    </div>
+  </form>
+{% endblock body %}
+
+{% block js_scripts %}
+  <script>
+    $(document).ready(function () {
+    activateSketchPad();
+    });
+  </script>
+{% endblock js_scripts %}

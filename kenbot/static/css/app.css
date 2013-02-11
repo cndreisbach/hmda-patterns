@@ -2,22 +2,14 @@ body {
   background: url('../img/debut_light.png');
 }
 
-#main {
-  margin-top: 20px;
-}
-
 #footer {
-  margin-top: 20px;
-  border: 1px solid #DDD;
-  padding: 20px;
+  height: 80px;
+  background: url('../img/kenbot.gif') right top no-repeat;
 }
 
 .team-kenbot {
-  background: url('../img/kenbot.gif') no-repeat;
-  text-indent: 50px;
-  height: 80px;
-  font-family: 'VT323';
-  font-size: 500%;
+  padding-top: 50px;
+  font-size: 90%; 
 }
 
 .chart {
@@ -74,4 +66,40 @@ body {
 }
 .color9 {
   background-color: #0e2e42;
+}
+
+
+.tools a{
+  border: 1px solid black;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 10px;
+  vertical-align: middle;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  color: black;
+  font-weight: bold;
+}
+
+#colors_sketch {
+  border: thin solid gray;
+}
+
+.ex-tooltip {
+  position: absolute;
+  background: #EEE;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  padding: 5px;
+  -webkit-box-shadow: 0 1px 3px #000;
+  -moz-box-shadow: 0 1px 3px #000;
+  -ms-box-shadow: 0 1px 3px #000;
+  -o-box-shadow: 0 1px 3px #000;
+  box-shadow: 0 1px 3px #000;
+  border-collapse: separate;
+  display: none;
 }

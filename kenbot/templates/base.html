@@ -8,9 +8,8 @@
   <!-- Set the viewport width to device width for mobile -->
   <meta name="viewport" content="width=device-width" />
 
-  <title>KENBOT</title>
+  <title>{% block title %}HMDA Patterns 2011{% endblock %}</title>
 
-  <link href='http://fonts.googleapis.com/css?family=VT323' rel='stylesheet' type='text/css'>
   {% assets "app_css" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}" />
   {% endassets %}
@@ -21,15 +20,44 @@
 </head>
 
 <body>
+  <div class="row">
+    <div class="twelve columns">
+      <nav class="top-bar">
+        <ul>
+          <li class="name">
+            <h1>
+              <a href="/">
+                HMDA Patterns 2011
+              </a>
+          </li>
+        </ul>
+
+        <section>
+          <ul class="left">
+            <li class="divider"></li>
+          </ul>
+          <ul class="right">
+            <li>
+              <a href="{{ url_for('.request_report') }}">
+                Request a report
+              </a>
+            </li>
+          </ul>
+        </section>
+      </nav>
+    </div>
+  </div>
+  
   <div id="main" class="row">
     <div class="twelve columns">
       {% block body %}{% endblock %}
     </div>
   </div>
 
-  <footer class="row" id="footer">
-    <div class="team-kenbot">
-      TEAM KENBOT
+  <footer class="row" id="footer">    
+    <div class="team-kenbot twelve columns">
+      Built by Team Kenbot.
+      <a href="https://github.com/crnixon/kenbot.git">See the source code on Github.</a>
     </div>
   </footer>
     

@@ -1,6 +1,14 @@
 kenbot
 ======
 
+To run the app
+--------------
+```sh
+python ./manage.py runserver [--config config]
+```
+
+`config` should be the path to a Flask configuration file.
+
 Tools
 -----
 * Python

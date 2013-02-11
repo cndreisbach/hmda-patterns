@@ -1,0 +1,28 @@
+{% extends "chart_base.html" %}
+
+{% block title %}
+  {{ super() }} - {{ msa.name }}
+{% endblock %}
+
+{% block body %}
+  <h1>HMDA Report for {{ msa.name }}</h1>
+
+  <h2>Denial Rates by Race</h2>
+  <div class="chart">
+    <figure style="width: 100%; height: 300px;" id="race-chart"></figure>
+  </div>
+
+  <h2>Denial Rates by Income and Race</h2>
+  <div class="chart">
+    <figure style="width: 100%; height: 300px;" id="income-chart"></figure>
+  </div>
+{% endblock body %}
+
+{% block js_scripts %}
+  <script>
+    $(document).ready(function () {
+      updateDenialRates({{ msa.cbsa_code }});
+      updateDenialRatesByIncome({{ msa.cbsa_code }});    
+    });
+  </script>
+{% endblock js_scripts %}
