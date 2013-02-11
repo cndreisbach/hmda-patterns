@@ -27,9 +27,26 @@
         ]
       };
 
+      var tt =
+        document.createElement('div'),
+        leftOffset = -(~~$('html').css('padding-left').replace('px', '') + ~~$('body').css('margin-left').replace('px', '')),
+        topOffset = -32;
+
+      tt.className = 'ex-tooltip';
+      document.body.appendChild(tt);
+      
       var options = {
         "tickFormatX": function (d) {
           return d.truncate(25, false);
+        },
+        "mouseover": function (d, i) {
+          var pos = $(this).offset();
+          $(tt).text(d.loan_purpose + " - " + d.y.round(2) + "%")
+            .css({top: topOffset + pos.top, left: pos.left + leftOffset})
+            .show();
+        },
+        "mouseout": function (x) {
+          $(tt).hide();
         }
       };
       
