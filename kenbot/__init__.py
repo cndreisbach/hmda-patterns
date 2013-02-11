@@ -29,7 +29,7 @@ def create_app(config=None):
 
     @app.teardown_request
     def close_db_connection(error=None):
-        g.db = None
+        g.db.session.remove()
 
     return app
     
