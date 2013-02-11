@@ -9,6 +9,10 @@ def index():
     return render_template('index.html',
                            msas=data.msas())
 
+@views.route('/virginia')
+def virginia():
+    return render_template('virginia.html')
+
 @views.route('/request-report')
 def request_report():
     return render_template('request_report.html')
