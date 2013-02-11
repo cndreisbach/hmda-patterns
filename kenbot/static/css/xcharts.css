@@ -5,6 +5,10 @@
 .xchart .fill {
   stroke-width: 0;
 }
+.line-chart .xchart .fill {
+  stroke-width: 0;
+opacity:0 !important;
+}
 .xchart circle {
   stroke: #FFF;
   stroke-width: 3px;

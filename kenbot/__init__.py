@@ -25,39 +25,39 @@ def denial_rates():
 
 @app.route('/denial_rates_data/<int:msa_md>')
 def denial_rates_data(msa_md=None):
-#    return jsonify(data=(
-#        {'total':30563, 'approval_count':13448, 'denial_rate':18.42, 'race':'American Indian'}
-#        ,{'total':255645, 'approval_count':135681, 'denial_rate':11.61, 'race':'Asian'}
-#        ,{'total':12345, 'approval_count':135681, 'denial_rate':22.61, 'race':'White'}
-#    ))
+
 
     sql = """with denials_by_race as (
-  select count(*) as total
-  ,sum(case when action_type = 1 then 1 else 0 end) as approval_count
-  ,sum(case when action_type = 3 then 1 else 0 end) as denial_count
-  , applicant_race_1, loan_purpose
-  from hmda
-  where  msa_md = %d
-    and applicant_race_1 < 6
-    and loan_purpose != 2
-  group by applicant_race_1, loan_purpose
-)
+                select count(*) as total
+                    ,sum(case when action_type = 1 then 1 else 0 end) as approval_count
+                    ,sum(case when action_type = 3 then 1 else 0 end) as denial_count
+                    , applicant_race_1, loan_purpose
+                from hmda
+                where  msa_md = :msa_md
+                    and applicant_race_1 < 6
+                    and loan_purpose != 2
+                group by applicant_race_1, loan_purpose
+        )
 
-  select total, approval_count, denial_count
-  , cast(denial_count as float) / cast(total as float) * 100 as denial_rate
-  , r.race, lp.loan_purpose
-  from denials_by_race d
-    join race r on d.applicant_race_1 = r.id
-    join loan_purpose lp on d.loan_purpose = lp.id
-  order by loan_purpose, race""" % (msa_md)
-#"
-    result = db.execute(sql).fetchall()
+        select total, approval_count, denial_count
+        , cast(denial_count as float) / cast(total as float) * 100 as denial_rate
+        , r.race, lp.loan_purpose
+        from denials_by_race d
+        join race r on d.applicant_race_1 = r.id
+        join loan_purpose lp on d.loan_purpose = lp.id
+        order by loan_purpose, race"""
+
+    result = db.execute(sql, params={'msa_md':msa_md}).fetchall()
     return jsonify(result = to_dicts(result))
 
 @app.route('/states')
 def states():
     s = db.execute("select * from state").fetchall()
     return jsonify(states = to_dicts(s))
+
+@app.route('/virginia1')
+def virginia():
+	return render_template('virginia.html')
 
 def to_dicts(query_result):
     return [dict(items) for items in query_result]
