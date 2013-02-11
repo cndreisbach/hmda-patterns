@@ -1,29 +1,27 @@
 {% extends "chart_base.html" %}
 
 {% block body %}
-  <div class="row">
-    <h1>Generate a custom HMDA report</h1>
+  <h1>Generate a custom HMDA report</h1>
 
-    <form action="" class="" id="metro-form">
-      <div class="row" style="margin-bottom: 20px;">
-        <div class="three columns">
-          <label class="right">Your metropolitan area</label>
-        </div>
-        <div class="six columns end">
-          <select name="msa" id="msa" class="inline chosen-select" data-placeholder="Choose your area...">
-            <option></option>
-            {% for msa in msas %}
-              <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
+  <form action="" class="" id="metro-form">
+    <div class="row" style="margin-bottom: 20px;">
+      <div class="three columns">
+        <label class="right">Your metropolitan area</label>
       </div>
-      <div class="row">
-        <div class="nine columns offset-by-three">
-          <input type="submit" class="button" value="Generate your report" />
-            <div id="chart_holder"></div>
-        </div>
+      <div class="six columns end">
+        <select name="msa" id="msa" class="inline chosen-select" data-placeholder="Choose your area...">
+          <option></option>
+          {% for msa in msas %}
+            <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
+          {% endfor %}
+        </select>
       </div>
-    </form>
-  </div>
+    </div>
+    <div class="row">
+      <div class="nine columns offset-by-three">
+        <input type="submit" class="button" value="Generate your report" />
+        <div id="chart_holder"></div>
+      </div>
+    </div>
+  </form>
 {% endblock body %}

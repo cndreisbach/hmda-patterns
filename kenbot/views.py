@@ -9,7 +9,7 @@ def index():
     return render_template('index.html',
                            msas=data.msas())
 
-@views.route('/request_report')
+@views.route('/request-report')
 def request_report():
     return render_template('request_report.html')
 

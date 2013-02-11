@@ -1,13 +1,11 @@
 {% extends "chart_base.html" %}
 
 {% block body %}
-  <div class="row">
-    <h1>HMDA Report for {{ msa.name }}</h1>
+  <h1>HMDA Report for {{ msa.name }}</h1>
 
-    <h2>Denial Rates by Race</h2>
-    <div class="chart">
-      <figure style="width: 100%; height: 300px;" id="first-chart"></figure>
-    </div>
+  <h2>Denial Rates by Race</h2>
+  <div class="chart">
+    <figure style="width: 100%; height: 300px;" id="first-chart"></figure>
   </div>
 {% endblock body %}
 
