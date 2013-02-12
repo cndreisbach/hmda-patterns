@@ -326,7 +326,15 @@
     $('#metro-form').on('submit', function (event) {
       event.preventDefault();
       var msa_md = $('#msa').find(":selected").val();
-      var url = "/msa-report/" + msa_md;
+      var url = "/metro/" + msa_md;
+      window.location = url;
+    });
+
+    $('#metro-comparison-form').on('submit', function (event) {
+      event.preventDefault();
+      var msa_md1 = $('#msa1').find(":selected").val();
+      var msa_md2 = $('#msa2').find(":selected").val();
+      var url = "/compare/" + msa_md1 + "/" + msa_md2;
       window.location = url;
     });
   });
