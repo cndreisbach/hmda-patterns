@@ -9,7 +9,7 @@ manager.add_option('-c', '--config',
                    dest='config',
                    required=False,
                    help='Path to configuration file.',
-                   default='../sample_config.py')
+                   default='sample_config.py')
 manager.add_command("runserver", Server())
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os
+import os, os.path
 
 from flask import Flask, g
 import flask.ext.assets
@@ -12,10 +12,9 @@ from .assets import raphael, app_js, app_css
 
 def create_app(config=None):
     app = Flask(__name__)
-    app.debug = True
     
-    if config:
-        app.config.from_pyfile(config)
+    if config:        
+        app.config.from_pyfile(os.path.join(os.getcwd(), config))
 
     app.register_blueprint(views)
 
