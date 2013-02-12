@@ -6,11 +6,20 @@
   tt.className = 'ex-tooltip';
   document.body.appendChild(tt);
 
+  var raceLabels = function (race) {
+    var raceMap = {
+      'Black or African American': 'Black',
+      'Native Hawaiian or Other Pacific Islander': 'Pacific Islander',
+      'American Indian or Alaska Native': 'Native American'
+    };
+    return raceMap[race] || race;
+  }
+
   var updateDenialRates = function (msa_md) {    
     $.get('/denial_rates_data/' + msa_md, function (data, textStatus, xhr) {
       data = data.result.map(function (datum) {
         return {
-          "x": datum.race,
+          "x": raceLabels(datum.race),
           "y": datum.denial_rate,
           "loan_purpose": datum.loan_purpose
         };
@@ -36,9 +45,6 @@
       };
       
       var options = {
-        "tickFormatX": function (d) {
-          return d.truncate(25, false);
-        },
         "mouseover": function (d, i) {
           var pos = $(this).offset();
           $(tt).text(d.loan_purpose + " - " + d.y.round(2) + "%")
@@ -64,8 +70,8 @@
     $.get('/denial_by_income/' + msa_md, function (data, textStatus, xhr) {
       data = data.result.map(function (datum) {
         return {
-          "x": datum.income_group,
-          "y": datum.denial_percent,
+          "x": datum.income_group * 1000,
+          "y": (datum.denial_percent / 100.0).round(4),
           "income_group": datum.income_group,
           "race": datum.race,
           "total_denied": datum.total_denied
@@ -76,54 +82,72 @@
         return datum.race;
       });
 
-      var chartData = {
-        "xScale": "linear",
-        "yScale": "linear",
-        "main": [
-          {
-            "className": ".white",
-            "data": data['White']
-          },
-          {
-            "className": ".asian",
-            "data": data['Asian']
-          },
-          {
-            "className": ".black",
-            "data": data['Black or African American']
-          },
-          {
-            "className": ".pacific",
-            "data": data['Native Hawaiian or Other Pacific Islander']
-          },
-          {
-            "className": ".first-nations",
-            "data": data['American Indian or Alaska Native']
-          }
-        ]
-      };
-
-      var options = {
-        "xMin": 30,
-        "xMax": 150,
-        "tickFormatX": function (d) {
-          return "$" + (d * 1000).format();
+      var chartData = [
+        {
+          "key": "White",
+          "values": data['White']
         },
-        "mouseover": function (d, i) {
-          var pos = $(this).offset();
-          $(tt).text(d.race + " - " + d.y.round(2) + "%")
-            .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-            .show();
+        {
+          "key": "Asian",
+          "values": data['Asian']
         },
-        "mouseout": function (x) {
-          $(tt).hide();
+        {
+          "key": "Black",
+          "values": data['Black or African American']
+        },
+        {
+          "key": "Pacific Islander",
+          "values": data['Native Hawaiian or Other Pacific Islander']
+        },
+        {
+          "key": "Native American",
+          "values": data['American Indian or Alaska Native']
         }
-      };
+      ];
+      
+      nv.addGraph(function() {  
+        var chart = nv.models
+          .lineChart()
+          .color(d3.scale.category10().range());
+ 
+        chart.xAxis
+          .axisLabel('Income')
+          .tickFormat(d3.format(',r'));
+ 
+        chart.yAxis
+          .axisLabel('Denial Rate')
+          .tickFormat(d3.format('4.2p'));
+ 
+        d3.select(container)
+          .datum(chartData)
+          .transition().duration(500)
+          .call(chart);
+ 
+        nv.utils.windowResize(function() {
+          d3.select(container).call(chart)
+        });
+        return chart;
+      });            
+    });
+  }
 
-      var incomeChart = new xChart('line-dotted',
-                                  chartData,
-                                  container,
-                                  options);
+  var nvDenialRatesByIncome = function () {
+    $.get('/denial_by_income/' + msa_md, function (data, textStatus, xhr) {
+      data = data.result.map(function (datum) {
+        return {
+          "x": datum.income_group,
+          "y": datum.denial_percent,
+          "income_group": datum.income_group,
+          "race": raceLabels(datum.race),
+          "total_denied": datum.total_denied
+        };
+      }).filter(function (datum) {
+        return datum.income_group !== 999999;
+      }).groupBy(function (datum) {
+        return datum.race;
+      });
+
+
     });
   };
 
@@ -166,9 +190,9 @@
           var hal = [];
           var gov = [];
           data = data.result.each(function (datum) {
-              var obj = {x: datum.race, y:datum.is_hal_percent};
+              var obj = {x: raceLabels(datum.race), y:datum.is_hal_percent};
               hal.push(obj);
-              var obj2 = {x: datum.race, y:datum.is_gov_backed_percent};
+              var obj2 = {x: raceLabels(datum.race), y:datum.is_gov_backed_percent};
               gov.push(obj2);
           })
           var chart_data = {
@@ -200,9 +224,9 @@
       $.get('/gov_backed_by_race_purpose/' + msa_md, function(data, textStatus, xhr){
           var data = data.result.map(
               function(datum){return({
-                  x:datum.race,
-                  y:datum.is_gov_backed_percent,
-                  loan_purpose_name:datum.loan_purpose_name
+                  x: raceLabels(datum.race),
+                  y: datum.is_gov_backed_percent,
+                  loan_purpose_name: datum.loan_purpose_name
               });
               }).groupBy(function(d){
                   return d.loan_purpose_name;
