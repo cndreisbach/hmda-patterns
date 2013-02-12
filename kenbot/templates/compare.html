@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="ten columns centered">
+    <h1>Compare Mortgage Denial Rates between Metropolitan Areas</h1>
+
+    <form action="" class="" id="metro-comparison-form">
+      <div class="row" style="margin-bottom: 20px;">
+        <div class="three columns">
+          <label for="msa1" class="right">Metropolitan area 1</label>
+        </div>
+        <div class="six columns end">
+          <select name="msa1" id="msa1" class="inline chosen-select" data-placeholder="Choose an area...">
+            <option></option>
+            {% for msa in msas %}
+              <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom: 20px;">
+        <div class="three columns">
+          <label for="msa2" class="right">Metropolitan area 2</label>
+        </div>
+        <div class="six columns end">
+          <select name="msa2" id="msa2" class="inline chosen-select" data-placeholder="Choose an area...">
+            <option></option>
+            {% for msa in msas %}
+              <option value="{{ msa.cbsa_code }}">{{ msa.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="nine columns offset-by-three">
+          <input type="submit" class="button" value="Generate your report" />
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock body %}

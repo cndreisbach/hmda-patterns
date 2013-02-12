@@ -1,11 +1,11 @@
-{% extends "chart_base.html" %}
+{% extends "base.html" %}
 
 {% block title %}
-{{ super() }} - {{ msa_1.name }}
+{{ super() }} - {{ msa_1.name }} / {{ msa_2.name }}
 {% endblock %}
 
 {% block body %}
-<h1>HMDA Comparison for {{ msa_1.name }} vs {{ msa_2.name }}</h1>
+<h1>HMDA Comparison for {{ msa_1.name }} vs. {{ msa_2.name }}</h1>
 <div>&nbsp;</div>
 
 <h2>Denial Rates by Income and Race</h2>
