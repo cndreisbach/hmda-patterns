@@ -58,7 +58,9 @@
     });
   };
 
-  var updateDenialRatesByIncome = function (msa_md) {
+  var updateDenialRatesByIncome = function (msa_md, container) {
+      container = container || "#income-chart";
+
     $.get('/denial_by_income/' + msa_md, function (data, textStatus, xhr) {
       data = data.result.map(function (datum) {
         return {
@@ -120,7 +122,7 @@
 
       var incomeChart = new xChart('line-dotted',
                                   chartData,
-                                  '#income-chart',
+                                  container,
                                   options);
     });
   };

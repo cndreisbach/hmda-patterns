@@ -18,6 +18,10 @@ def msa_report(msa_md):
     return render_template('msa_report.html',
                            msa=data.msa(msa_md))
 
+@views.route('/msa-compare/<int:msa_md_1>/<int:msa_md_2>')
+def msa_compare(msa_md_1, msa_md_2):
+    return render_template('msa_compare.html', msa_1=data.msa(msa_md_1), msa_2=data.msa(msa_md_2))
+
 @views.route('/denial_rates')
 def denial_rates():
     return render_template('chart_sample.html')

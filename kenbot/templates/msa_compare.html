@@ -1,0 +1,42 @@
+{% extends "chart_base.html" %}
+
+{% block title %}
+{{ super() }} - {{ msa_1.name }}
+{% endblock %}
+
+{% block body %}
+<h1>HMDA Comparison for {{ msa_1.name }} vs {{ msa_2.name }}</h1>
+<div>&nbsp;</div>
+
+<h2>Denial Rates by Income and Race</h2>
+
+<h1>National</h1>
+<div class="chart">
+    <figure style="width: 100%; height: 300px;" id="income-chart-national"></figure>
+</div>
+
+<h1>{{ msa_1.name }}</h1>
+<div class="chart">
+    <figure style="width: 100%; height: 300px;" id="income-chart-msa1"></figure>
+</div>
+
+<h1>{{ msa_2.name }}</h1>
+<div class="chart">
+    <figure style="width: 100%; height: 300px;" id="income-chart-msa2"></figure>
+</div>
+
+
+
+
+
+{% endblock body %}
+
+{% block js_scripts %}
+<script>
+    $(document).ready(function () {
+    updateDenialRatesByIncome('', '#income-chart-national');
+    updateDenialRatesByIncome({{ msa_1.cbsa_code }}, '#income-chart-msa1');
+    updateDenialRatesByIncome({{ msa_2.cbsa_code }}, '#income-chart-msa2');
+    });
+</script>
+{% endblock js_scripts %}
