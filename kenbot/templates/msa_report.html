@@ -9,13 +9,41 @@
 
   <h2>Denial Rates by Race</h2>
   <div class="chart">
+      <div id="race-legend" class="right"></div>
     <figure style="width: 100%; height: 300px;" id="race-chart"></figure>
   </div>
 
   <h2>Denial Rates by Income and Race</h2>
   <div class="chart">
+      <div id="income-legend" class="right"></div>
     <figure style="width: 100%; height: 300px;" id="income-chart"></figure>
   </div>
+
+  <h2>HAL Government backed by income</h2>
+  <div class="chart">
+     <div id="hal_income_legend" class="right"></div>
+     <div id="hal_income_chart"   style="width: 800px; height: 500px;" ></div>
+  </div>
+
+  <h2>HAL Government backed by race</h2>
+  <div class="chart">
+      <div id="hal_race_legend" class='right'></div>
+      <div id="hal_race_chart"   style="width: 800px; height: 500px;" ></div>
+  </div>
+
+  <h2>Government backed by race and purpose</h2>
+  <div class="chart">
+      <div id="purpose_race_legend" class='right'></div>
+      <div id="purpose_race_chart"   style="width: 800px; height: 500px;" ></div>
+  </div>
+
+<h2>Government backed by income and purpose</h2>
+  <div class="chart">
+      <div id="purpose_income_legend" class='right'></div>
+      <div id="purpose_income_chart"   style="width: 800px; height: 500px;" ></div>
+  </div>
+
+
 {% endblock body %}
 
 {% block js_scripts %}
@@ -23,6 +51,10 @@
     $(document).ready(function () {
       updateDenialRates({{ msa.cbsa_code }});
       updateDenialRatesByIncome({{ msa.cbsa_code }});    
+      updateHalGovBackedByIncome({{ msa.cbsa_code }});
+      updateHalGovBackedByRace({{ msa.cbsa_code }});
+      updateGovBackedByRacePurpose({{ msa.cbsa_code }});
+      updateGovBackedByIncomePurpose({{ msa.cbsa_code }});
     });
   </script>
 {% endblock js_scripts %}
