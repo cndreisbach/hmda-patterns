@@ -1,10 +1,13 @@
 from flask import g
 
+
 def msas():
-    return g.db.cbsa.filter(g.db.cbsa.parent_code==None).all()
+    return g.db.cbsa.filter(g.db.cbsa.parent_code == None).all()
+
 
 def msa(cbsa_code):
     return g.db.cbsa.filter_by(cbsa_code=cbsa_code).one()
+
 
 def denial_rates(msa_md=None):
     sql = """with denials_by_race as (
@@ -27,13 +30,18 @@ def denial_rates(msa_md=None):
         join loan_purpose lp on d.loan_purpose = lp.id
         order by loan_purpose, race"""
 
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def denial_by_income(msa_md=None):
     sql = """
-        select sum(total) as total, sum(case when action_type_denied = 1 then total else 0 end) as total_denied,
-            cast(sum(case when action_type_denied = 1 then total else 0 end) as float) / cast(sum(total) as float) * 100 as denial_percent
-            , r.race, income_group
+        select sum(total) as total,
+               sum(case when action_type_denied = 1 then total else 0 end) as total_denied,
+               cast(sum(case when action_type_denied = 1
+                             then total
+                             else 0 end) as float) / cast(sum(total) as float) * 100 as denial_percent,
+               r.race,
+               income_group
         from v_hmda_agg_1 v
         join race r on v.applicant_race_1 = r.id
       """
@@ -44,31 +52,45 @@ def denial_by_income(msa_md=None):
         order by r.race, income_group
     """
 
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def hal_gov_backed_by_income(msa_md=None):
     sql = """
-        select sum(total) as total, income_group
-        , sum(case when is_hal = 1 then total else 0 end) as total_hal, sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed
-        ,cast(sum(case when is_hal = 1 then total else 0 end) as float) / cast(sum(total) as float) * 100 as is_hal_percent
-        ,cast(sum(case when is_gov_backed = 1 then total else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
+        select sum(total) as total,
+               income_group,
+               sum(case when is_hal = 1 then total else 0 end) as total_hal,
+               sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed,
+               cast(sum(case when is_hal = 1
+                             then total
+                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_hal_percent,
+               cast(sum(case when is_gov_backed = 1
+                             then total
+                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
         from v_hmda_agg_1 v
         where action_type_approved = 1
     """
     if msa_md:
         sql = sql + "and msa_md = :msa_md"
     sql = sql + """
-        group by  income_group
-        order by  income_group
+        group by income_group
+        order by income_group
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def hal_gov_backed_by_race(msa_md=None):
     sql = """
-        select sum(total) as total, r.race
-            ,sum(case when is_hal = 1 then total else 0 end) as total_hal, sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed
-            ,cast(sum(case when is_hal = 1 then total else 0 end) as float) / cast(sum(total) as float) * 100 as is_hal_percent
-            ,cast(sum(case when is_gov_backed = 1 then total else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
+        select sum(total) as total,
+               r.race,
+               sum(case when is_hal = 1 then total else 0 end) as total_hal,
+               sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed,
+               cast(sum(case when is_hal = 1
+                             then total
+                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_hal_percent,
+               cast(sum(case when is_gov_backed = 1
+                             then total
+                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
         from v_hmda_agg_1 v
         join race r on v.applicant_race_1 = r.id
         where action_type_approved = 1
@@ -79,13 +101,16 @@ def hal_gov_backed_by_race(msa_md=None):
         group by  r.race
         order by  r.race
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def gov_backed_by_race_purpose(msa_md=None):
     sql = """
-        select sum(total) as total, case when loan_purpose = 1 then 'purchase' else 'refinance' end as loan_purpose_name, r.race
-            ,sum(is_gov_backed) as total_gov_backed
-            ,cast(sum(is_gov_backed) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
+        select sum(total) as total,
+               case when loan_purpose = 1 then 'purchase' else 'refinance' end as loan_purpose_name,
+               r.race,
+               sum(is_gov_backed) as total_gov_backed,
+               cast(sum(is_gov_backed) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
         from v_hmda_agg_1 v
         join race r on v.applicant_race_1 = r.id
         where action_type_approved = 1 and v.loan_purpose != 2
@@ -96,13 +121,18 @@ def gov_backed_by_race_purpose(msa_md=None):
         group by r.race, loan_purpose
         order by r.race, loan_purpose
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def gov_backed_by_income_purpose(msa_md=None):
     sql = """
-        select sum(total) as total, case when loan_purpose = 1 then 'purchase' else 'refinance' end as loan_purpose_name, income_group
-         ,sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed
-        ,cast(sum(case when is_gov_backed = 1 then total else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
+        select sum(total) as total,
+               case when loan_purpose = 1 then 'purchase' else 'refinance' end as loan_purpose_name,
+               income_group,
+               sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed,
+               cast(sum(case when is_gov_backed = 1
+                             then total
+                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
         from v_hmda_agg_1 v
         where action_type_approved = 1 and v.loan_purpose != 2
     """
@@ -112,4 +142,4 @@ def gov_backed_by_income_purpose(msa_md=None):
         group by income_group,  loan_purpose
         order by income_group,  loan_purpose
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return g.db.execute(sql, params={'msa_md': msa_md}).fetchall()

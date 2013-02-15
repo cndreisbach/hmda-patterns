@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask.ext.script import Manager, Server, Option
+from flask.ext.script import Manager, Server
 
 from kenbot import create_app
 
