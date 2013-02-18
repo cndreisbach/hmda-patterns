@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import os, os.path
+import os
+import os.path
 
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
