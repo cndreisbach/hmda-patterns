@@ -19,7 +19,6 @@ def create_app(config=None):
     app.register_blueprint(views)
 
     asset_pkg = flask.ext.assets.Environment(app)
-    asset_pkg.register('raphael', raphael)
     asset_pkg.register('app_js', app_js)
     asset_pkg.register('app_css', app_css)
 
@@ -28,7 +27,11 @@ def create_app(config=None):
 
     return app
 
+# These are at the end in order to prevent issues with circular
+# import. A better solution would be to avoid circular import
+# altogether.
+
 db = SQLAlchemy()
 
 from .views import views
-from .assets import raphael, app_js, app_css
+from .assets import app_js, app_css

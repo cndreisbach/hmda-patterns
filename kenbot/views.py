@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, g
+from flask import Blueprint, render_template, jsonify
 from . import data
 
 views = Blueprint('views', __name__,

@@ -58,8 +58,6 @@ libraries used to load HMDA and HMDA-related data.
 [Flask]: http://flask.pocoo.org/
 [SQLAlchemy]: http://www.sqlalchemy.org/
 [zurb]: http://foundation.zurb.com/
-[Raphael.js]: http://raphaeljs.com/
-[gRaphael]: http://g.raphaeljs.com/
 [Chosen]: http://harvesthq.github.com/chosen/
 [Sugar.js]: http://sugarjs.com/
 [d3.js]: http://d3js.org/
