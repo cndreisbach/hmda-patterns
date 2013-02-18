@@ -28,7 +28,6 @@ def denial_rates():
 
 @views.route('/denial_rates_data/<int:msa_md>')
 def denial_rates_data(msa_md=None):
-
     return results_to_json(data.denial_rates(msa_md))
 
 @views.route('/denial_by_income/<int:msa_md>')

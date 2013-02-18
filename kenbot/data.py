@@ -1,12 +1,23 @@
-from flask import g
+from . import db
+
+
+def cbsa_table():
+    return db.Table("cbsa", db.metadata, autoload=True, autoload_with=db.engine)
+
 
 def msas():
-    return g.db.cbsa.filter(g.db.cbsa.parent_code==None).all()
+    cbsa = cbsa_table()
+    select = db.select([cbsa], cbsa.c.parent_code == None)
+    return db.session.execute(select).fetchall()
+
 
 def msa(cbsa_code):
-    return g.db.cbsa.filter_by(cbsa_code=cbsa_code).one()
+    cbsa = cbsa_table()
+    select = db.select([cbsa], cbsa.c.cbsa_code == cbsa_code)
+    return db.session.execute(select).fetchone()
 
-def denial_rates(msa_md=None):
+
+def denial_rates(msa_md):
     sql = """with denials_by_race as (
                 select count(*) as total
                     ,sum(case when action_type = 1 then 1 else 0 end) as approval_count
@@ -27,7 +38,8 @@ def denial_rates(msa_md=None):
         join loan_purpose lp on d.loan_purpose = lp.id
         order by loan_purpose, race"""
 
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def denial_by_income(msa_md=None):
     sql = """
@@ -44,7 +56,8 @@ def denial_by_income(msa_md=None):
         order by r.race, income_group
     """
 
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def hal_gov_backed_by_income(msa_md=None):
     sql = """
@@ -61,7 +74,8 @@ def hal_gov_backed_by_income(msa_md=None):
         group by  income_group
         order by  income_group
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def hal_gov_backed_by_race(msa_md=None):
     sql = """
@@ -79,7 +93,8 @@ def hal_gov_backed_by_race(msa_md=None):
         group by  r.race
         order by  r.race
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def gov_backed_by_race_purpose(msa_md=None):
     sql = """
@@ -96,7 +111,8 @@ def gov_backed_by_race_purpose(msa_md=None):
         group by r.race, loan_purpose
         order by r.race, loan_purpose
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+
 
 def gov_backed_by_income_purpose(msa_md=None):
     sql = """
@@ -112,4 +128,4 @@ def gov_backed_by_income_purpose(msa_md=None):
         group by income_group,  loan_purpose
         order by income_group,  loan_purpose
     """
-    return g.db.execute(sql, params={'msa_md':msa_md}).fetchall()
+    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()

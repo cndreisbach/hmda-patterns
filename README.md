@@ -45,7 +45,7 @@ libraries used to load HMDA and HMDA-related data.
 
 ### Back end
 * [Flask][]
-* [SQLSoup][]
+* [SQLAlchemy][]
 
 ### Front end
 * [Zurb Foundation][zurb]
@@ -56,7 +56,7 @@ libraries used to load HMDA and HMDA-related data.
 
 [hmda-tools]: https://github.com/crnixon/hmda-tools
 [Flask]: http://flask.pocoo.org/
-[SQLSoup]: https://sqlsoup.readthedocs.org/en/latest/
+[SQLAlchemy]: http://www.sqlalchemy.org/
 [zurb]: http://foundation.zurb.com/
 [Raphael.js]: http://raphaeljs.com/
 [gRaphael]: http://g.raphaeljs.com/

@@ -2,18 +2,17 @@
 
 import os, os.path
 
-from flask import Flask, g
+from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
 import flask.ext.assets
-import sqlsoup
 
+__all__ = ['create_app', 'db']
 
-from .views import views
-from .assets import raphael, app_js, app_css
 
 def create_app(config=None):
     app = Flask(__name__)
-    
-    if config:        
+
+    if config:
         app.config.from_pyfile(os.path.join(os.getcwd(), config))
 
     app.register_blueprint(views)
@@ -23,15 +22,12 @@ def create_app(config=None):
     asset_pkg.register('app_js', app_js)
     asset_pkg.register('app_css', app_css)
 
-    @app.before_request
-    def connect_to_db():
-        g.db = sqlsoup.SQLSoup(app.config['DATABASE_URI'])
-
-    @app.teardown_request
-    def close_db_connection(error=None):
-        g.db.session.remove()
+    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URI']
+    db.init_app(app)
 
     return app
-    
 
+db = SQLAlchemy()
 
+from .views import views
+from .assets import raphael, app_js, app_css
