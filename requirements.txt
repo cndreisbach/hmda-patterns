@@ -4,4 +4,4 @@ flask-script
 flask-sqlalchemy
 psycopg2
 yuicompressor
-hmda_tools
+hmda_tools>=0.1.4
