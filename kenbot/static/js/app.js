@@ -394,7 +394,7 @@
         $('#metro-form').on('submit', function (event) {
             event.preventDefault();
             var msa_md = $('#msa').find(":selected").val();
-            var url = "/msa-report/" + msa_md;
+            var url = "/metro/" + msa_md;
             window.location = url;
         });
     });
