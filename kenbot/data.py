@@ -10,13 +10,14 @@ def denials_by_race_select(msa_md):
 
     return db.select([db.func.count().label('total'),
                       db.func.sum(db.case([(hmda.c.action_type == 1, 1)],
-                                               else_=0)).label('approval_count'),
+                                          else_=0)).label(
+                      'approval_count'),
                       db.func.sum(db.case([(hmda.c.action_type == 3, 1)],
-                                               else_=0)).label('denial_count'),
+                                          else_=0)).label('denial_count'),
                       hmda.c.applicant_race_1,
                       hmda.c.loan_purpose]) \
-                      .where(db.and_(hmda.c.msa_md == msa_md, hmda.c.loan_purpose != 2)) \
-                      .group_by(hmda.c.applicant_race_1, hmda.c.loan_purpose)
+            .where(db.and_(hmda.c.msa_md == msa_md, hmda.c.loan_purpose != 2)) \
+            .group_by(hmda.c.applicant_race_1, hmda.c.loan_purpose)
 
 
 def msas():
@@ -36,7 +37,7 @@ def denial_rates(msa_md):
     race = table("race")
     loan_purpose = table("loan_purpose")
     denials_by_race = denials_by_race_select(msa_md).cte("denials_by_race")
-    
+
     join = db.join(denials_by_race, race,
                    denials_by_race.c.applicant_race_1 == race.c.id) \
              .join(loan_purpose, denials_by_race.c.loan_purpose == loan_purpose.c.id)
@@ -49,9 +50,9 @@ def denial_rates(msa_md):
                         100).label('denial_rate'),
                        race.c.race,
                        loan_purpose.c.loan_purpose]) \
-               .select_from(join) \
-               .order_by(race.c.race,
-                         loan_purpose.c.loan_purpose)
+             .select_from(join) \
+             .order_by(race.c.race,
+                       loan_purpose.c.loan_purpose)
 
     return db.session.execute(query).fetchall()
 
