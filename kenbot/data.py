@@ -95,8 +95,8 @@ def hal_gov_backed_by_income(msa_md=None):
 
     query = db.select([total.label("total"),
                        agg.c.income_group,
-                       total_hal,
-                       total_gov_backed,
+                       total_hal.label("total_hal"),
+                       total_gov_backed.label("total_gov_backed"),
                        (to_float(total_hal) /
                         to_float(total) * 100).label("is_hal_percent"),
                        (to_float(total_gov_backed) /
@@ -112,66 +112,78 @@ def hal_gov_backed_by_income(msa_md=None):
 
 
 def hal_gov_backed_by_race(msa_md=None):
-    sql = """
-        select sum(total) as total,
-               r.race,
-               sum(case when is_hal = 1 then total else 0 end) as total_hal,
-               sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed,
-               cast(sum(case when is_hal = 1
-                             then total
-                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_hal_percent,
-               cast(sum(case when is_gov_backed = 1
-                             then total
-                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
-        from v_hmda_agg_1 v
-        join race r on v.applicant_race_1 = r.id
-        where action_type_approved = 1
-    """
+    agg = table("v_hmda_agg_1")
+    total = db.func.sum(agg.c.total)
+    race = table("race")
+    total_hal = total_when(agg, agg.c.is_hal == 1)
+    total_gov_backed = total_when(agg, agg.c.is_gov_backed == 1)
+    join = db.join(agg, race, agg.c.applicant_race_1 == race.c.id)
+
+    query = db.select([total,
+                       race.c.race,
+                       total_hal.label("total_hal"),
+                       total_gov_backed.label("total_gov_backed"),
+                       (to_float(total_hal) /
+                        to_float(total) * 100).label("is_hal_percent"),
+                       (to_float(total_gov_backed) /
+                        to_float(total) * 100).label("is_gov_backed_percent")]) \
+              .select_from(join) \
+              .where(agg.c.action_type_approved == 1)              
+    
     if msa_md:
-        sql = sql + " and msa_md = :msa_md"
-    sql = sql + """
-        group by  r.race
-        order by  r.race
-    """
-    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+        query = query.where(agg.c.msa_md == msa_md)
+
+    query = query.group_by(race.c.race).order_by(race.c.race)
+        
+    return db.session.execute(query).fetchall()
 
 
 def gov_backed_by_race_purpose(msa_md=None):
-    sql = """
-        select sum(total) as total,
-               case when loan_purpose = 1 then 'purchase' else 'refinance' end as loan_purpose_name,
-               r.race,
-               sum(is_gov_backed) as total_gov_backed,
-               cast(sum(is_gov_backed) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
-        from v_hmda_agg_1 v
-        join race r on v.applicant_race_1 = r.id
-        where action_type_approved = 1 and v.loan_purpose != 2
-    """
+    agg = table("v_hmda_agg_1")
+    total = db.func.sum(agg.c.total)
+    total_gov_backed = db.func.sum(agg.c.is_gov_backed)
+    race = table("race")
+    join = db.join(agg, race, agg.c.applicant_race_1 == race.c.id)
+
+    query = db.select([total.label("total"),
+                       db.case([(agg.c.loan_purpose == 1, "purchase")],
+                               else_='refinance').label("loan_purpose_name"),
+                       race.c.race,
+                       total_gov_backed.label("total_gov_backed"),
+                       (to_float(total_gov_backed) /
+                        to_float(total) * 100).label("is_gov_backed_percent")]) \
+              .select_from(join) \
+              .where(agg.c.action_type_approved == 1) \
+              .where(agg.c.loan_purpose != 2)
+
     if msa_md:
-        sql = sql + " and msa_md = :msa_md"
-    sql = sql + """
-        group by r.race, loan_purpose
-        order by r.race, loan_purpose
-    """
-    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+        query = query.where(agg.c.msa_md == msa_md)
+
+    query = query.group_by(race.c.race, agg.c.loan_purpose) \
+                 .order_by(race.c.race, agg.c.loan_purpose)
+            
+    return db.session.execute(query).fetchall()
 
 
 def gov_backed_by_income_purpose(msa_md=None):
-    sql = """
-        select sum(total) as total,
-               case when loan_purpose = 1 then 'purchase' else 'refinance' end as loan_purpose_name,
-               income_group,
-               sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed,
-               cast(sum(case when is_gov_backed = 1
-                             then total
-                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
-        from v_hmda_agg_1 v
-        where action_type_approved = 1 and v.loan_purpose != 2
-    """
+    agg = table("v_hmda_agg_1")
+    total = db.func.sum(agg.c.total)
+    total_gov_backed = total_when(agg, agg.c.is_gov_backed == 1)
+
+    query = db.select([total.label("total"),
+                       db.case([(agg.c.loan_purpose == 1, "purchase")],
+                               else_='refinance').label("loan_purpose_name"),
+                       agg.c.income_group,
+                       total_gov_backed.label("total_gov_backed"),
+                       (to_float(total_gov_backed) /
+                        to_float(total) * 100).label("is_gov_backed_percent")]) \
+              .where(agg.c.action_type_approved == 1) \
+              .where(agg.c.loan_purpose != 2)
+
     if msa_md:
-        sql = sql + " and msa_md = :msa_md"
-    sql = sql + """
-        group by income_group,  loan_purpose
-        order by income_group,  loan_purpose
-    """
-    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+        query = query.where(agg.c.msa_md == msa_md)
+
+    query = query.group_by(agg.c.income_group, agg.c.loan_purpose) \
+                 .order_by(agg.c.income_group, agg.c.loan_purpose)
+
+    return db.session.execute(query).fetchall()
