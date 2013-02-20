@@ -10,8 +10,7 @@ def denials_by_race_select(msa_md):
 
     return db.select([db.func.count().label('total'),
                       db.func.sum(db.case([(hmda.c.action_type == 1, 1)],
-                                          else_=0)).label(
-                      'approval_count'),
+                                          else_=0)).label('approval_count'),
                       db.func.sum(db.case([(hmda.c.action_type == 3, 1)],
                                           else_=0)).label('denial_count'),
                       hmda.c.applicant_race_1,
@@ -32,6 +31,14 @@ def msa(cbsa_code):
     return db.session.execute(select).fetchone()
 
 
+def total_when(table, param):
+    return db.func.sum(db.case([(param, table.c.total)],
+                               else_=0))
+
+def to_float(statement):
+    return db.cast(statement, db.FLOAT)
+
+
 def denial_rates(msa_md):
     hmda = table("hmda")
     race = table("race")
@@ -45,8 +52,8 @@ def denial_rates(msa_md):
     query = db.select([denials_by_race.c.total,
                        denials_by_race.c.approval_count,
                        denials_by_race.c.denial_count,
-                       (db.cast(denials_by_race.c.denial_count, db.FLOAT) /
-                        db.cast(denials_by_race.c.total, db.FLOAT) *
+                       (to_float(denials_by_race.c.denial_count) /
+                        to_float(denials_by_race.c.total) *
                         100).label('denial_rate'),
                        race.c.race,
                        loan_purpose.c.loan_purpose]) \
@@ -58,49 +65,50 @@ def denial_rates(msa_md):
 
 
 def denial_by_income(msa_md=None):
-    sql = """
-        select sum(total) as total,
-               sum(case when action_type_denied = 1 then total else 0 end) as total_denied,
-               cast(sum(case when action_type_denied = 1
-                             then total
-                             else 0 end) as float) / cast(sum(total) as float) * 100 as denial_percent,
-               r.race,
-               income_group
-        from v_hmda_agg_1 v
-        join race r on v.applicant_race_1 = r.id
-      """
-    if msa_md:
-        sql = sql + "where msa_md = :msa_md"
-    sql = sql + """
-        group by r.race, income_group
-        order by r.race, income_group
-    """
+    agg = table("v_hmda_agg_1")
+    race = table("race")
+    total_denied = total_when(agg, agg.c.action_type_denied == 1)
+    join = db.join(agg, race, agg.c.applicant_race_1 == race.c.id)
 
-    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+    query = db.select([db.func.sum(agg.c.total).label("total"),
+                       total_denied.label("total_denied"),
+                       (to_float(total_denied) /
+                        to_float(db.func.sum(agg.c.total)) * 100).label('denial_percent'),
+                       race.c.race,
+                       agg.c.income_group])
+
+    if msa_md:
+        query = query.where(agg.c.msa_md == msa_md)
+
+    query = query.select_from(join) \
+                 .group_by(race.c.race, agg.c.income_group) \
+                 .order_by(race.c.race, agg.c.income_group)
+                      
+    return db.session.execute(query).fetchall()
 
 
 def hal_gov_backed_by_income(msa_md=None):
-    sql = """
-        select sum(total) as total,
-               income_group,
-               sum(case when is_hal = 1 then total else 0 end) as total_hal,
-               sum(case when is_gov_backed = 1 then total else 0 end) as total_gov_backed,
-               cast(sum(case when is_hal = 1
-                             then total
-                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_hal_percent,
-               cast(sum(case when is_gov_backed = 1
-                             then total
-                             else 0 end) as float) / cast(sum(total) as float) * 100 as is_gov_backed_percent
-        from v_hmda_agg_1 v
-        where action_type_approved = 1
-    """
+    agg = table("v_hmda_agg_1")
+    total = db.func.sum(agg.c.total)
+    total_hal = total_when(agg, agg.c.is_hal == 1)
+    total_gov_backed = total_when(agg, agg.c.is_gov_backed == 1)
+
+    query = db.select([total.label("total"),
+                       agg.c.income_group,
+                       total_hal,
+                       total_gov_backed,
+                       (to_float(total_hal) /
+                        to_float(total) * 100).label("is_hal_percent"),
+                       (to_float(total_gov_backed) /
+                        to_float(total) * 100).label("is_gov_backed_percent")]) \
+              .where(agg.c.action_type_approved == 1)
+
     if msa_md:
-        sql = sql + "and msa_md = :msa_md"
-    sql = sql + """
-        group by income_group
-        order by income_group
-    """
-    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+        query = query.where(agg.c.msa_md == msa_md)
+
+    query = query.group_by(agg.c.income_group).order_by(agg.c.income_group)
+    
+    return db.session.execute(query).fetchall()
 
 
 def hal_gov_backed_by_race(msa_md=None):
