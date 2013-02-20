@@ -1,44 +1,59 @@
 from . import db
 
 
-def cbsa_table():
-    return db.Table("cbsa", db.metadata, autoload=True, autoload_with=db.engine)
+def table(name):
+    return db.Table(name, db.metadata, autoload=True, autoload_with=db.engine)
+
+
+def denials_by_race_select(msa_md):
+    hmda = table("hmda")
+
+    return db.select([db.func.count().label('total'),
+                      db.func.sum(db.case([(hmda.c.action_type == 1, 1)],
+                                               else_=0)).label('approval_count'),
+                      db.func.sum(db.case([(hmda.c.action_type == 3, 1)],
+                                               else_=0)).label('denial_count'),
+                      hmda.c.applicant_race_1,
+                      hmda.c.loan_purpose]) \
+                      .where(db.and_(hmda.c.msa_md == msa_md, hmda.c.loan_purpose != 2)) \
+                      .group_by(hmda.c.applicant_race_1, hmda.c.loan_purpose)
 
 
 def msas():
-    cbsa = cbsa_table()
+    cbsa = table("cbsa")
     select = db.select([cbsa], cbsa.c.parent_code == None)
     return db.session.execute(select).fetchall()
 
 
 def msa(cbsa_code):
-    cbsa = cbsa_table()
+    cbsa = table("cbsa")
     select = db.select([cbsa], cbsa.c.cbsa_code == cbsa_code)
     return db.session.execute(select).fetchone()
 
 
 def denial_rates(msa_md):
-    sql = """with denials_by_race as (
-                select count(*) as total
-                    ,sum(case when action_type = 1 then 1 else 0 end) as approval_count
-                    ,sum(case when action_type = 3 then 1 else 0 end) as denial_count
-                    , applicant_race_1, loan_purpose
-                from hmda
-                where  msa_md = :msa_md
-                    and applicant_race_1 < 6
-                    and loan_purpose != 2
-                group by applicant_race_1, loan_purpose
-        )
+    hmda = table("hmda")
+    race = table("race")
+    loan_purpose = table("loan_purpose")
+    denials_by_race = denials_by_race_select(msa_md).cte("denials_by_race")
+    
+    join = db.join(denials_by_race, race,
+                   denials_by_race.c.applicant_race_1 == race.c.id) \
+             .join(loan_purpose, denials_by_race.c.loan_purpose == loan_purpose.c.id)
 
-        select total, approval_count, denial_count
-        , cast(denial_count as float) / cast(total as float) * 100 as denial_rate
-        , r.race, lp.loan_purpose
-        from denials_by_race d
-        join race r on d.applicant_race_1 = r.id
-        join loan_purpose lp on d.loan_purpose = lp.id
-        order by loan_purpose, race"""
+    query = db.select([denials_by_race.c.total,
+                       denials_by_race.c.approval_count,
+                       denials_by_race.c.denial_count,
+                       (db.cast(denials_by_race.c.denial_count, db.FLOAT) /
+                        db.cast(denials_by_race.c.total, db.FLOAT) *
+                        100).label('denial_rate'),
+                       race.c.race,
+                       loan_purpose.c.loan_purpose]) \
+               .select_from(join) \
+               .order_by(race.c.race,
+                         loan_purpose.c.loan_purpose)
 
-    return db.session.execute(sql, params={'msa_md': msa_md}).fetchall()
+    return db.session.execute(query).fetchall()
 
 
 def denial_by_income(msa_md=None):
