@@ -1,13 +1,5 @@
 from flask.ext import assets
 
-raphael = assets.Bundle('js/raphael-min.js',
-                        'js/g.raphael-min.js',
-                        'js/g.pie-min.js',
-                        'js/g.bar-min.js',
-                        'js/g.line-min.js',
-                        'js/g.dot-min.js',
-                        output='gen/raphael.js')
-
 app_js = assets.Bundle('js/jquery.js',
                        'js/jquery.foundation.mediaQueryToggle.js',
                        'js/jquery.foundation.forms.js',
@@ -27,9 +19,8 @@ app_js = assets.Bundle('js/jquery.js',
                        'js/d3.v3.js',
                        'js/nv.d3.js',
                        'js/xcharts.js',
-                       'js/app.js',
-                       'js/kenbot.js',
                        'js/sketch.js',
+                       'js/app.js',
                        filters='yui_js',
                        output='gen/app.js')
 
