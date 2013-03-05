@@ -29,20 +29,6 @@
       </div>
     </div>
     <div class="row">
-      <div class="three columns">
-        <label class="right">Use the sketch pad below to draw a sample of your report</label>
-      </div>
-      <div class="ten columns end" style="background-color: white;">
-
-        <div id="sketch_pad">
-          <div class="tools">
-            <a href="#colors_sketch" data-download="png" style="float: right; width: 100px;">Download</a>
-          </div>
-          <canvas id="colors_sketch" width="800" height="300"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="row">
       <div>
         <input type="submit" class="button" value="Submit Request" />
         <div id="chart_holder"></div>
@@ -50,11 +36,3 @@
     </div>
   </form>
 {% endblock body %}
-
-{% block js_scripts %}
-  <script>
-    $(document).ready(function () {
-    activateSketchPad();
-    });
-  </script>
-{% endblock js_scripts %}

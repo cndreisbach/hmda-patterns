@@ -17,10 +17,10 @@ body {
   background: white;
 }
 
-.xchart .axis text {
-  stroke: none;
-  max-width: 50px;
+.chart svg {
+  height: 500px;
 }
+
 .left{float:left;}
 .right{float:right;}
 

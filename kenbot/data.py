@@ -146,8 +146,8 @@ def gov_backed_by_race_purpose(msa_md=None):
     join = db.join(agg, race, agg.c.applicant_race_1 == race.c.id)
 
     query = db.select([total.label("total"),
-                       db.case([(agg.c.loan_purpose == 1, "purchase")],
-                               else_='refinance').label("loan_purpose_name"),
+                       db.case([(agg.c.loan_purpose == 1, "Home purchase")],
+                               else_='Refinancing').label("loan_purpose_name"),
                        race.c.race,
                        total_gov_backed.label("total_gov_backed"),
                        (to_float(total_gov_backed) /
@@ -171,8 +171,8 @@ def gov_backed_by_income_purpose(msa_md=None):
     total_gov_backed = total_when(agg, agg.c.is_gov_backed == 1)
 
     query = db.select([total.label("total"),
-                       db.case([(agg.c.loan_purpose == 1, "purchase")],
-                               else_='refinance').label("loan_purpose_name"),
+                       db.case([(agg.c.loan_purpose == 1, "Home purchase")],
+                               else_='Refinancing').label("loan_purpose_name"),
                        agg.c.income_group,
                        total_gov_backed.label("total_gov_backed"),
                        (to_float(total_gov_backed) /

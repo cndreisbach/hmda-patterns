@@ -46,6 +46,27 @@
   tt.className = 'ex-tooltip';
   document.body.appendChild(tt);
 
+  var numToPercent = function (n) {
+    return (n / 100.0).round(4)
+  };
+
+  var setupChart = function (chart, container, data, fn) {
+    nv.addGraph(function() {  
+      chart.color(d3.scale.category10().range());
+
+      fn(chart);
+
+      d3.select(container)
+        .datum(data)
+        .transition().duration(500)
+        .call(chart);
+ 
+      nv.utils.windowResize(chart.update);
+        
+      return chart;
+    });   
+  }
+  
   var raceLabels = function (race) {
     var raceMap = {
       'Black or African American': 'Black',
@@ -55,128 +76,50 @@
     return raceMap[race] || race;
   }
 
-  var updateDenialRates = function (msa_md) {    
+  var createChartData = function (data, keys) {
+    return keys.map(function (key) {
+      return {"key": key, "values": data[key]};
+    });
+  }
+
+  var racesToShow = ['White', 'Black', 'Asian', 'Pacific Islander', 'Native American'];
+
+  var updateDenialRates = function (msa_md, container) {
+    container = container || "#race-chart";
+    
     $.get('/denial_rates_data/' + msa_md, function (data, textStatus, xhr) {
       data = data.result.map(function (datum) {
         return {
           "x": raceLabels(datum.race),
-          "y": datum.denial_rate,
+          "y": numToPercent(datum.denial_rate),
+          "race": raceLabels(datum.race),
           "loan_purpose": datum.loan_purpose
         };
+      }).filter(function (datum) {
+        return racesToShow.some(datum.race);
       }).groupBy(function (datum) {
         return datum.loan_purpose;
       });
 
-      var chartData = {
-        "xScale": "ordinal",
-        "yScale": "linear",
-        "main": [
-          {
-            "className": ".msa",
-            "data": data['Home purchase'],
-            "legend": "Purchase"
-          },
-          {
-            "className": ".msa2",
-            "data": data['Refinancing'],
-            "legend": "Refinancing"
-          }
-        ]
-      };
-      
-      var options = {
-        "mouseover": function (d, i) {
-          var pos = $(this).offset();
-          $(tt).text(d.loan_purpose + " - " + d.y.round(2) + "%")
-            .css({top: topOffset + pos.top, left: pos.left + leftOffset})
-            .show();
-        },
-        "mouseout": function (x) {
-          $(tt).hide();
-        }
-      };
-      
-      var raceChart = new xChart('bar',
-                                  chartData,
-                                  '#race-chart',
-                                  options);
-      draw_legend(chartData.main, $('#race-legend'));
+      setupChart(nv.models.multiBarChart(),
+                 container,
+                 createChartData(data, ["Home purchase", "Refinancing"]),
+                 function (chart) {
+                   chart.yAxis
+                     .axisLabel('Denial Rate')
+                     .tickFormat(d3.format('4.2p'));
+                 });                   
     });
   };
 
   var updateDenialRatesByIncome = function (msa_md, container) {
-      container = container || "#income-chart";
+    container = container || "#income-chart";
 
     $.get('/denial_by_income/' + msa_md, function (data, textStatus, xhr) {
       data = data.result.map(function (datum) {
         return {
           "x": datum.income_group * 1000,
-          "y": (datum.denial_percent / 100.0).round(4),
-          "income_group": datum.income_group,
-          "race": datum.race,
-          "total_denied": datum.total_denied
-        };
-      }).filter(function (datum) {
-        return datum.income_group !== 999999;
-      }).groupBy(function (datum) {
-        return datum.race;
-      });
-
-      var chartData = [
-        {
-          "key": "White",
-          "values": data['White']
-        },
-        {
-          "key": "Asian",
-          "values": data['Asian']
-        },
-        {
-          "key": "Black",
-          "values": data['Black or African American']
-        },
-        {
-          "key": "Pacific Islander",
-          "values": data['Native Hawaiian or Other Pacific Islander']
-        },
-        {
-          "key": "Native American",
-          "values": data['American Indian or Alaska Native']
-        }
-      ];
-      
-      nv.addGraph(function() {  
-        var chart = nv.models
-          .lineChart()
-          .color(d3.scale.category10().range());
- 
-        chart.xAxis
-          .axisLabel('Income')
-          .tickFormat(d3.format(',r'));
- 
-        chart.yAxis
-          .axisLabel('Denial Rate')
-          .tickFormat(d3.format('4.2p'));
- 
-        d3.select(container)
-          .datum(chartData)
-          .transition().duration(500)
-          .call(chart);
- 
-        nv.utils.windowResize(function() {
-          d3.select(container).call(chart)
-        });
-        return chart;
-      });            
-    });
-  }
-
-  var nvDenialRatesByIncome = function () {
-    $.get('/denial_by_income/' + msa_md, function (data, textStatus, xhr) {
-      data = data.result.map(function (datum) {
-        return {
-          "x": datum.income_group,
-          "y": datum.denial_percent,
+          "y": numToPercent(datum.denial_percent),
           "income_group": datum.income_group,
           "race": raceLabels(datum.race),
           "total_denied": datum.total_denied
@@ -187,169 +130,148 @@
         return datum.race;
       });
 
+      setupChart(nv.models.lineChart(),
+                 container,
+                 createChartData(data, racesToShow),
+                 function (chart) {
+                   chart.xAxis
+                     .axisLabel('Income')
+                     .tickFormat(d3.format(',r'));
+ 
+                   chart.yAxis
+                     .axisLabel('Denial Rate')
+                     .tickFormat(d3.format('4.2p'));
+                 });
+    });
+  }
 
+  var updateHalGovBackedByIncome = function(msa_md, container) {
+    container = container || "#hal-income-chart";
+
+    $.get('/hal_gov_backed_by_income/' + msa_md, function(data, textStatus, xhr){
+      data = data.result.map(function (datum) {
+        return [
+          { "x": datum.income_group * 1000,
+            "y": numToPercent(datum.is_hal_percent),
+            "loan_type": "HAL",
+            "income_group": datum.income_group
+          },
+          {
+            "x": datum.income_group * 1000,
+            "y": numToPercent(datum.is_gov_backed_percent),
+            "loan_type": "Government-backed",
+            "income_group": datum.income_group            
+          }
+        ];
+      }).flatten().filter(function (datum) {
+        return datum.income_group !== 999999;
+      }).groupBy(function (datum) {
+        return datum.loan_type;
+      });
+
+      setupChart(nv.models.multiBarChart(),
+                 container,
+                 createChartData(data, ["HAL", "Government-backed"]),
+                 function (chart) {
+                   chart.xAxis
+                     .axisLabel('Income')
+                     .tickFormat(d3.format(',r'));
+        
+                   chart.yAxis
+                     .tickFormat(d3.format('4.2p'));
+                 });                   
     });
   };
 
-  var updateHalGovBackedByIncome = function(msa_md) {
-      $.get('/hal_gov_backed_by_income/' + msa_md, function(data, textStatus, xhr){
-          var hal = [];
-          var gov = [];
-          data = data.result.each(function (datum) {
-              var obj = {x: datum.income_group, y:datum.is_hal_percent};
-              hal.push(obj);
-              var obj2 = {x: datum.income_group, y:datum.is_gov_backed_percent};
-              gov.push(obj2);
-          })
-          var chart_data = {
-              "xScale": "ordinal",
-              "yScale": "linear",
-              "main": [
-                  {"className":".main.l1","data":hal, legend:'hal'},
-                  {"className":".main.l2","data":gov, legend:'gov'}
-              ]
-          };
-          var options = {
-              "tickFormatY": function (y) {
-                  return y + '%';
-
-              },
-              "tickFormatX": function (x) {
-                  return x == '999999' ? '$250,000+' : '$' + x + ',000';
-
-              }
-          };
-
-          var myChart = new xChart('bar', chart_data, '#hal_income_chart', options);
-          draw_legend(chart_data.main, $('#hal_income_legend'));
+  var updateHalGovBackedByRace = function (msa_md, container) {
+    container = container || '#hal-race-chart';
+    $.get('/hal_gov_backed_by_race/' + msa_md, function(data, textStatus, xhr){
+      data = data.result.map(function (datum) {
+        return [
+          { "x": raceLabels(datum.race),
+            "y": numToPercent(datum.is_hal_percent),
+            "loan_type": "HAL",
+            "race": raceLabels(datum.race)
+          },
+          { "x": raceLabels(datum.race),            
+            "y": numToPercent(datum.is_gov_backed_percent),
+            "loan_type": "Government-backed",
+            "race": raceLabels(datum.race)              
+          }
+        ];
+      }).flatten().filter(function (datum) {
+        return racesToShow.some(datum.race);          
+      }).groupBy(function (datum) {
+        return datum.loan_type;
       });
+
+      setupChart(nv.models.multiBarChart(),
+                 container,
+                 createChartData(data, ["HAL", "Government-backed"]),
+                 function (chart) {    
+                   chart.yAxis
+                     .tickFormat(d3.format('4.2p')); 
+                 });
+    });
   };
 
-  var updateHalGovBackedByRace = function(msa_md) {
-      $.get('/hal_gov_backed_by_race/' + msa_md, function(data, textStatus, xhr){
-          var hal = [];
-          var gov = [];
-          data = data.result.each(function (datum) {
-              var obj = {x: raceLabels(datum.race), y:datum.is_hal_percent};
-              hal.push(obj);
-              var obj2 = {x: raceLabels(datum.race), y:datum.is_gov_backed_percent};
-              gov.push(obj2);
-          })
-          var chart_data = {
-              "xScale": "ordinal",
-              "yScale": "linear",
-              "main": [
-                  {"className":".main.l1","data":hal, legend:'hal'},
-                  {"className":".main.l2","data":gov, legend:'gov'}
-              ]
-          };
-
-
-          var options = {
-              "tickFormatY": function (y) {
-                  return y + '%';
-
-              },
-              "tickFormatX": function (d) {
-                  return d.truncate(15, false);
-              }
-          };
-
-          var myChart = new xChart('bar', chart_data, '#hal_race_chart', options);
-          draw_legend(chart_data.main, $('#hal_race_legend'));
+  var updateGovBackedByRacePurpose = function (msa_md, container) {
+    container = container || '#purpose-race-chart';
+    
+    $.get('/gov_backed_by_race_purpose/' + msa_md, function(data, textStatus, xhr){
+      var data = data.result.map(function (datum) {
+        return {
+          "x": raceLabels(datum.race),
+          "y": numToPercent(datum.is_gov_backed_percent),
+          "race": raceLabels(datum.race),
+          "loan_purpose_name": datum.loan_purpose_name
+        };
+     }).filter(function (datum) {
+        return racesToShow.some(datum.race);        
+      }).groupBy(function(d){
+        return d.loan_purpose_name;
       });
+
+      setupChart(nv.models.multiBarChart(),
+                 container,
+                 createChartData(data, ["Home purchase", "Refinancing"]),
+                 function (chart) {    
+                   chart.yAxis
+                     .tickFormat(d3.format('4.2p')); 
+                 });
+    });
   };
 
-  var updateGovBackedByRacePurpose = function(msa_md){
-      $.get('/gov_backed_by_race_purpose/' + msa_md, function(data, textStatus, xhr){
-          var data = data.result.map(
-              function(datum){return({
-                  x: raceLabels(datum.race),
-                  y: datum.is_gov_backed_percent,
-                  loan_purpose_name: datum.loan_purpose_name
-              });
-              }).groupBy(function(d){
-                  return d.loan_purpose_name;
-              });
-          var chart_data = {
-              "xScale": "ordinal",
-              "yScale": "linear",
-              "main": [
-                  {"className":".main.l1","data":data['refinance'], legend:'Refinance'},
-                  {"className":".main.l2","data":data['purchase'], legend:'Purchase'}
-              ]
+  var updateGovBackedByIncomePurpose = function (msa_md, container) {
+    container = container || '#purpose-income-chart';
+    
+    $.get('/gov_backed_by_income_purpose/' + msa_md, function (data, textStatus, xhr) {
+      var data = data.result.map(
+        function (datum) {
+          return {
+            'x': datum.income_group * 1000,
+            'y': numToPercent(datum.is_gov_backed_percent),
+            'loan_purpose_name': datum.loan_purpose_name,
+            'income_group': datum.income_group
           };
+        }).filter(function (datum) {
+          return datum.income_group !== 999999;
+        }).groupBy(function(d){
+          return d.loan_purpose_name;
+        });
 
-          var options = {
-              "tickFormatY": function (y) {
-                  return y + '%';
+      setupChart(nv.models.multiBarChart(),
+                 container,
+                 createChartData(data, ["Home purchase", "Refinancing"]),
+                 function (chart) {
+                   chart.xAxis
+                     .axisLabel('Income')
+                     .tickFormat(d3.format(',r'));
 
-              },
-              "tickFormatX": function (d) {
-                  return d.truncate(15, false);
-              }
-          };
-
-          var myChart = new xChart('bar', chart_data, '#purpose_race_chart', options);
-          draw_legend(chart_data.main, $('#purpose_race_legend'));
-      });
-  };
-
-  var updateGovBackedByIncomePurpose = function(msa_md){
-      $.get('/gov_backed_by_income_purpose/' + msa_md, function(data, textStatus, xhr){
-          var data = data.result.map(
-              function(datum){return({
-                  x:datum.income_group,
-                  y:datum.is_gov_backed_percent,
-                  loan_purpose_name:datum.loan_purpose_name
-              });
-              }).groupBy(function(d){
-                  return d.loan_purpose_name;
-              });
-          var chart_data = {
-              "xScale": "ordinal",
-              "yScale": "linear",
-              "main": [
-                  {"className":".main.l1","data":data['refinance'], legend:'Refinance'},
-                  {"className":".main.l2","data":data['purchase'], legend:'Purchase'}
-              ]
-          };
-          var options = {
-              "tickFormatY": function (y) {
-                  return y + '%';
-
-              },
-              "tickFormatX": function (x) {
-                  return x == '999999' ? '$250,000+' : '$' + x + ',000';
-              }
-          };
-          var myChart = new xChart('bar', chart_data, '#purpose_income_chart', options);
-          draw_legend(chart_data.main, $('#purpose_income_legend'));
-      });
-  };
-
-  var draw_legend = function(data, container){
-    var ln = data.length - 1;
-    for (i = 0; i<= ln; i++){
-        var legend_block = $('<div>').addClass('media legend_block');
-        var color_block = $('<div>').addClass('color_block ' + 'color' + i);
-        var img_block = $('<div>').addClass('img').append(color_block);
-        var bd_block = $('<div>').html(data[i]['legend']).addClass('bd')
-        legend_block.append(img_block).append(bd_block);
-        container.append(legend_block);
-    }
-  };
-
-  var activateSketchPad = function(){
-      $(function() {
-          $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
-              $('#sketch_pad .tools').append("<a href='#colors_sketch' data-color='" + this + "' style='width: 10px; background: " + this + ";'></a> ");
-          });
-          $.each([3, 5, 10, 15], function() {
-              $('#sketch_pad .tools').append("<a href='#colors_sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
-          });
-          $('#colors_sketch').sketch();
-      });
+                   chart.yAxis
+                     .tickFormat(d3.format('4.2p')); 
+                 });      
+    });
   };
 
   window.updateDenialRates = updateDenialRates;
@@ -358,7 +280,6 @@
   window.updateHalGovBackedByRace = updateHalGovBackedByRace;
   window.updateGovBackedByRacePurpose = updateGovBackedByRacePurpose;
   window.updateGovBackedByIncomePurpose = updateGovBackedByIncomePurpose;
-  window.activateSketchPad = activateSketchPad;
 
   $(document).ready(function () {
     $('.chosen-select').chosen();
@@ -376,6 +297,12 @@
       var msa_md2 = $('#msa2').find(":selected").val();
       var url = "/compare/" + msa_md1 + "/" + msa_md2;
       window.location = url;
+    });
+
+    $('.tabs').foundationTabs({
+      callback: function () {
+        $(window).trigger('resize');
+      }
     });
   });
 })(jQuery);
