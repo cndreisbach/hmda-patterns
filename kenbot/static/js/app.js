@@ -50,6 +50,14 @@
     return (n / 100.0).round(4)
   };
 
+  var incomeGroup = function (n) {
+    if (n < 300) {
+      return "$" + d3.format(',r')(n * 1000);
+    } else {
+      return "$300,000+";
+    }
+  }
+
   var setupChart = function (chart, container, data, fn) {
     nv.addGraph(function() {  
       chart.color(d3.scale.category10().range());
@@ -118,25 +126,25 @@
     $.get('/denial_by_income/' + msa_md, function (data, textStatus, xhr) {
       data = data.result.map(function (datum) {
         return {
-          "x": datum.income_group * 1000,
+          "x": datum.income_group,
           "y": numToPercent(datum.denial_percent),
           "income_group": datum.income_group,
           "race": raceLabels(datum.race),
           "total_denied": datum.total_denied
         };
-      }).filter(function (datum) {
-        return datum.income_group !== 999999;
       }).groupBy(function (datum) {
         return datum.race;
       });
 
+      console.log(data);
+      
       setupChart(nv.models.lineChart(),
                  container,
                  createChartData(data, racesToShow),
                  function (chart) {
                    chart.xAxis
                      .axisLabel('Income')
-                     .tickFormat(d3.format(',r'));
+                     .tickFormat(incomeGroup);
  
                    chart.yAxis
                      .axisLabel('Denial Rate')
@@ -151,21 +159,19 @@
     $.get('/hal_gov_backed_by_income/' + msa_md, function(data, textStatus, xhr){
       data = data.result.map(function (datum) {
         return [
-          { "x": datum.income_group * 1000,
+          { "x": datum.income_group,
             "y": numToPercent(datum.is_hal_percent),
             "loan_type": "HAL",
             "income_group": datum.income_group
           },
           {
-            "x": datum.income_group * 1000,
+            "x": datum.income_group,
             "y": numToPercent(datum.is_gov_backed_percent),
             "loan_type": "Government-backed",
             "income_group": datum.income_group            
           }
         ];
-      }).flatten().filter(function (datum) {
-        return datum.income_group !== 999999;
-      }).groupBy(function (datum) {
+      }).flatten().groupBy(function (datum) {
         return datum.loan_type;
       });
 
@@ -175,7 +181,7 @@
                  function (chart) {
                    chart.xAxis
                      .axisLabel('Income')
-                     .tickFormat(d3.format(',r'));
+                     .tickFormat(incomeGroup);
         
                    chart.yAxis
                      .tickFormat(d3.format('4.2p'));
@@ -249,13 +255,11 @@
       var data = data.result.map(
         function (datum) {
           return {
-            'x': datum.income_group * 1000,
+            'x': datum.income_group,
             'y': numToPercent(datum.is_gov_backed_percent),
             'loan_purpose_name': datum.loan_purpose_name,
             'income_group': datum.income_group
           };
-        }).filter(function (datum) {
-          return datum.income_group !== 999999;
         }).groupBy(function(d){
           return d.loan_purpose_name;
         });
@@ -266,7 +270,7 @@
                  function (chart) {
                    chart.xAxis
                      .axisLabel('Income')
-                     .tickFormat(d3.format(',r'));
+                     .tickFormat(incomeGroup);
 
                    chart.yAxis
                      .tickFormat(d3.format('4.2p')); 

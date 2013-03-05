@@ -10,13 +10,11 @@ with raw as (
   , case when action_type = 3 then 1 else 0 end as action_type_denied
   , case when action_type = 1 then 1 else 0 end as action_type_approved
   , case when action_type in(1,3) then 0 else 1 end as action_type_other
-  , case when applicant_income < 31 then 30
-    when applicant_income between 31 and 60 then 60
-    when applicant_income between 61 and 90 then 90
-    when applicant_income between 91 and 120 then 120
-    when applicant_income between 121 and 150 then 150
-    else 999999 end as income_group
-  from  hmda
+  , cast(case
+         when applicant_income < 300
+         then ceil(applicant_income / 30.0) * 30
+         else 300 end as int) as income_group
+  from hmda
 )
 ,
 v1 as (

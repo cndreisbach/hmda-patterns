@@ -14,77 +14,18 @@ body {
 
 .chart {
   padding: 20px;
-  background: white;
+  background: white;  
 }
 
 .chart svg {
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  padding: 0 20px 10px 20px;
   height: 500px;
 }
 
 .left{float:left;}
 .right{float:right;}
-
-.line:before,.line:after{content:"";display:table;}
-.line:after{clear:both;}
-.line{*zoom:1;}
-
-.media{overflow:hidden;*overflow:visible;zoom:1;}
-.media .img{float:left;margin-right: 10px;}
-.media .img img{display:block;}
-.media .imgExt{float:right; /*margin-left: 10px;*/}
-.bd,.ft, .hd{overflow:hidden; *overflow:visible; zoom:1;}
-
-/*Legends*/
-.legend_block {padding-bottom:5px;}
-.color_block {width:1em; height:1em;border: 1px solid #555;}
-.color0 {
-  background-color: #3880aa;
-}
-.color1 {
-  background-color: #4da944;
-}
-.color2 {
-  background-color: #f26522;
-}
-.color3 {
-  background-color: #c6080d;
-}
-.color4 {
-  background-color: #672d8b;
-}
-.color5 {
-  background-color: #ce1797;
-}
-.color6 {
-  background-color: #d9ce00;
-}
-.color7 {
-  background-color: #754c24;
-}
-.color8 {
-  background-color: #2eb9b4;
-}
-.color9 {
-  background-color: #0e2e42;
-}
-
-
-.tools a{
-  border: 1px solid black;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 10px;
-  vertical-align: middle;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  color: black;
-  font-weight: bold;
-}
-
-#colors_sketch {
-  border: thin solid gray;
-}
 
 .ex-tooltip {
   position: absolute;
