@@ -1,6 +1,56 @@
 from . import db
 
 
+class MultiCounty(object):
+    @property
+    def population(self):
+        return sum(county.population for county in self.counties)
+
+    @property
+    def land_area(self):
+        return sum(county.land_area for county in self.counties)
+
+    @property
+    def housing_units(self):
+        return sum(county.housing_units for county in self.counties)
+
+
+class State(db.Model, MultiCounty):
+    __tablename__ = 'state'
+
+    fips_code = db.Column(db.Integer, primary_key=True)
+    abbr = db.Column(db.String(2))
+    
+
+class County(db.Model, MultiCounty):
+    __tablename__ = 'county'
+
+    county_fips_code = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    population = db.Column(db.Integer)
+    housing_units = db.Column(db.Integer)
+    land_area = db.Column(db.Integer)
+
+    state_fips_code = db.Column(db.Integer, db.ForeignKey('state.fips_code'))
+    state = db.relationship("State", backref=db.backref("counties"), order_by=county_fips_code)
+
+    cbsa_code = db.Column(db.Integer, db.ForeignKey('cbsa.cbsa_code'))
+    cbsa = db.relationship("CBSA", backref=db.backref("counties"), order_by=county_fips_code)
+
+    def __unicode__(self):
+        return "%s, %s" % [self.name, self.state.name]
+
+    
+class CBSA(db.Model):
+    __tablename__ = 'cbsa'
+
+    cbsa_code = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+
+    def __unicode__(self):
+        return self.name
+
+
 def table(name):
     return db.Table(name, db.metadata, autoload=True, autoload_with=db.engine)
 
